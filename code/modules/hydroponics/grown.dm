@@ -268,6 +268,7 @@
 		if(reagents)
 			reagents.add_reagent("nutriment", 1)
 			reagents.add_reagent("toxin", 3+round(potency / 5, 1))
+			reagents.add_reagent("maizine", 1+round(potency / 5, 1))
 			bitesize = 1+round(reagents.total_volume / 2, 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/deathberries
@@ -281,8 +282,9 @@
 		..()
 		if(reagents)
 			reagents.add_reagent("nutriment", 1)
-			reagents.add_reagent("toxin", 3+round(potency / 3, 1))
+			reagents.add_reagent("ehuadol", 2+round(potency / 5, 1))
 			reagents.add_reagent("lexorin", 1+round(potency / 5, 1))
+			reagents.add_reagent("toxin", 3+round(potency / 3, 1))
 			bitesize = 1+round(reagents.total_volume / 2, 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/ambrosiavulgaris
@@ -492,8 +494,10 @@
 		..()
 		if(reagents)
 			reagents.add_reagent("nutriment", 1+round((potency / 25), 1))
+			reagents.add_reagent("blazeoil", max(0, potency-80))
 			reagents.add_reagent("capsaicin", 8+round(potency / 2, 1))
 			reagents.add_reagent("condensedcapsaicin", 4+round(potency / 4, 1))
+
 			bitesize = 1+round(reagents.total_volume / 4, 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/ghost_chilli/attackby(var/obj/item/O as obj, var/mob/user as mob)
@@ -623,7 +627,10 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/bloodtomato/throw_impact(atom/hit_atom)
 	..()
-	new/obj/effect/decal/cleanable/blood/splatter(src.loc)
+	if(potency >= 50)
+		new /obj/effect/gibspawner/generic(src.loc)
+	else
+		new/obj/effect/decal/cleanable/blood/splatter(src.loc)
 	src.visible_message("<span class='notice'>The [src.name] has been squashed.</span>","<span class='moderate'>You hear a smack.</span>")
 	src.reagents.reaction(get_turf(hit_atom))
 	for(var/atom/A in get_turf(hit_atom))
@@ -706,6 +713,8 @@
 	name = "kudzu pod"
 	desc = "<I>Pueraria Virallis</I>: An invasive species with vines that rapidly creep and wrap around whatever they contact."
 	icon_state = "kudzupod"
+	var/list/mutations = list()
+	var/mutating = 0
 	New(var/loc, var/potency = 10)
 		..()
 		if(reagents)
@@ -791,6 +800,7 @@
 	icon_state = "angel"
 	dried_type = /obj/item/weapon/reagent_containers/food/snacks/grown/mushroom/angel
 	New(var/loc, var/potency = 35)
+		..()
 		if(reagents)
 			reagents.add_reagent("nutriment", 1+round((potency / 50), 1))
 			reagents.add_reagent("amatoxin", 13+round(potency / 3, 1))
@@ -1074,3 +1084,15 @@
 			reagents.add_reagent("space_drugs", 20+round(potency / 8, 1))
 			reagents.add_reagent("mindbreaker", 20+round(potency / 8, 1))
 			bitesize = 1+round(reagents.total_volume / 2, 1)
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/singulopotato
+	seed = "/obj/item/seeds/singulopotatoseed"
+	name = "singularity potato"
+	desc = "This strange potato seems to have its own gravitational pull..."
+	icon_state = "singulopotato"
+	dried_type = /obj/item/weapon/reagent_containers/food/snacks/grown/potato
+	New(var/loc, var/potency = 25)
+		..()
+		if(reagents)
+			reagents.add_reagent("nutriment", 1+round((potency / 10), 1))
+			bitesize = reagents.total_volume

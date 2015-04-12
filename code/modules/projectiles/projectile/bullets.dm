@@ -18,6 +18,8 @@
 	stun = 5
 	weaken = 5
 
+/obj/item/projectile/bullet/weakbullet3
+	damage = 20
 
 /obj/item/projectile/bullet/pellet
 	name = "pellet"
@@ -55,8 +57,8 @@
 	damage = 20
 
 
-/obj/item/projectile/bullet/stunshot
-	name = "stunshot"
+/obj/item/projectile/bullet/stunslug
+	name = "stunslug"
 	damage = 5
 	stun = 10
 	weaken = 10
@@ -81,6 +83,8 @@
 /obj/item/projectile/bullet/incendiary/mech
 	damage = 5
 
+/obj/item/projectile/bullet/incendiary/mid
+	damage = 10
 
 /obj/item/projectile/bullet/mime
 	damage = 20

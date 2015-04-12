@@ -70,6 +70,8 @@
 
 	var/stepsound = 'sound/mecha/mechturn.ogg'
 
+	var/obj/item/clothing/glasses/hud
+
 
 /obj/mecha/New()
 	..()
@@ -418,7 +420,7 @@
 /obj/mecha/attack_hand(mob/user as mob)
 	src.log_message("Attack by hand/paw. Attacker - [user].",1)
 
-	if ((HULK in user.mutations) && !prob(src.deflect_chance))
+	if (user.has_organic_effect(/datum/organic_effect/hulk) && !prob(src.deflect_chance))
 		src.take_damage(15)
 		src.check_for_internal_damage(list(MECHA_INT_TEMP_CONTROL,MECHA_INT_TANK_BREACH,MECHA_INT_CONTROL_LOST))
 		user.visible_message("<font color='red'><b>[user] hits [src.name], doing some damage.</b></font>", "<font color='red'><b>You hit [src.name] with all your might. The metal creaks and bends.</b></font>")
@@ -612,10 +614,6 @@
 /obj/mecha/blob_act()
 	take_damage(30, "brute")
 	return
-
-//TODO
-/obj/mecha/meteorhit()
-	return ex_act(rand(1,3))//should do for now
 
 /obj/mecha/emp_act(severity)
 	if(get_charge())
@@ -1009,6 +1007,12 @@
 		playsound(src, 'sound/machines/windowdoor.ogg', 50, 1)
 		if(!hasInternalDamage())
 			src.occupant << sound('sound/mecha/nominal.ogg',volume=50)
+
+		if(hud)
+			if(H.glasses)
+				occupant_message("<font color='red'>[H.glasses] prevent you from using [src] [hud]</font>")
+			else
+				H.glasses = hud
 		return 1
 	else
 		return 0
@@ -1160,6 +1164,12 @@
 			mmi.mecha = null
 			src.occupant.canmove = 0
 			src.verbs += /obj/mecha/verb/eject
+
+		if(ishuman(occupant))
+			var/mob/living/carbon/human/H = occupant
+			if(H.glasses == hud)
+				H.glasses = null
+
 		src.occupant = null
 		src.icon_state = initial(icon_state)+"-open"
 		src.dir = dir_in

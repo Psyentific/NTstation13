@@ -29,14 +29,14 @@
 	new /obj/item/clothing/tie/waistcoat(src)
 	new /obj/item/clothing/head/soft/black(src)
 	new /obj/item/clothing/head/soft/black(src)
-	new /obj/item/clothing/shoes/black(src)
-	new /obj/item/clothing/shoes/black(src)
+	new /obj/item/clothing/shoes/sneakers/black(src)
+	new /obj/item/clothing/shoes/sneakers/black(src)
 
 /*
  * Chef
  */
 /obj/structure/closet/chefcloset
-	name = "chef's closet"
+	name = "\proper chef's closet"
 	desc = "It's a storage unit for foodservice garments."
 	icon_state = "black"
 	icon_closed = "black"
@@ -69,7 +69,12 @@
 /obj/structure/closet/jcloset/New()
 	..()
 	sleep(2)
+	new /obj/item/clothing/head/soft/red(src)
 	new /obj/item/clothing/under/rank/janitor(src)
+	new /obj/item/clothing/under/janimaid(src)
+	new /obj/item/clothing/under/rank/janitor/alternate(src)
+	new /obj/item/clothing/suit/hazardvest/denim(src)
+	new /obj/item/clothing/head/maidbow(src)
 	new /obj/item/weapon/cartridge/janitor(src)
 	new /obj/item/clothing/gloves/black(src)
 	new /obj/item/clothing/head/soft/purple(src)

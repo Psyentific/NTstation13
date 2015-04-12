@@ -69,8 +69,12 @@
 		icon_state = "hair_vlong"
 
 	long_over_eye
-		name = "Over eye"
+		name = "Over-eye Long"
 		icon_state = "hair_longovereye"
+
+	short_over_eye
+		name = "Over-eye Short"
+		icon_state = "hair_shortovereye"
 
 	longest
 		name = "Very Long Hair"
@@ -111,6 +115,10 @@
 	ponytail3
 		name = "Ponytail 3"
 		icon_state = "hair_ponytail3"
+
+	ponytail4
+		name = "Ponytail 4"
+		icon_state = "hair_ponytail4"
 
 	side_tail
 		name = "Side Pony"
@@ -163,6 +171,10 @@
 	beehive
 		name = "Beehive"
 		icon_state = "hair_beehive"
+
+	beehive2
+		name = "Beehive 2"
+		icon_state = "hair_beehivev2"
 
 	bobcurl
 		name = "Bobcurl"
@@ -220,6 +232,10 @@
 		name = "Emo"
 		icon_state = "hair_emo"
 
+	longemo
+		name = "Long Emo"
+		icon_state = "hair_longemo"
+
 	fag
 		name = "Flow Hair"
 		icon_state = "hair_f"
@@ -235,6 +251,10 @@
 	mohawk
 		name = "Mohawk"
 		icon_state = "hair_d"
+
+	reversemohawk
+		name = "Reverse Mohawk"
+		icon_state = "hair_reversemohawk"
 
 	jensen
 		name = "Adam Jensen Hair"
@@ -264,6 +284,10 @@
 		name = "Hime Cut"
 		icon_state = "hair_himecut"
 
+	himeup
+		name = "Hime Updo"
+		icon_state = "hair_himeup"
+
 	antenna
 		name = "Ahoge"
 		icon_state = "hair_antenna"
@@ -287,6 +311,10 @@
 	braid
 		name = "Floorlength Braid"
 		icon_state = "hair_braid"
+
+	shortbraid
+		name = "Short Floorlength Braid"
+		icon_state = "hair_shortbraid"
 
 	odango
 		name = "Odango"
@@ -327,6 +355,106 @@
 	bun
 		name = "Bun Head"
 		icon_state = "hair_bun"
+
+	braidtail
+		name = "Braided Tail"
+		icon_state = "hair_braidtail"
+
+	familyman
+		name = "Family Man"
+		icon_state = "hair_thefamilyman"
+
+	drillruru
+		name = "Drillruru"
+		icon_state = "hair_drillruru"
+
+	dandypomp
+		name = "Dandy Pompadour"
+		icon_state = "hair_dandypompadour"
+
+	poofy
+		name = "Poofy"
+		icon_state = "hair_poofy"
+
+	crono
+		name = "Chrono"
+		icon_state = "hair_toriyama1"
+
+	vegeta
+		name = "Vegeta Hair"
+		icon_state = "hair_toriyama2"
+
+	cia
+		name = "CIA"
+		icon_state = "hair_cia"
+
+	mulder
+		name = "Mulder"
+		icon_state = "hair_mulder"
+
+	scully
+		name = "Scully"
+		icon_state = "hair_scully"
+
+	nitori
+		name = "Nitori"
+		icon_state = "hair_nitori"
+
+	joestar
+		name = "Joestar"
+		icon_state = "hair_joestar"
+
+	edgeworth
+		name = "Edgeworth"
+		icon_state = "hair_edgeworth"
+
+	objection
+		name = "Wright"
+		icon_state = "hair_objection!"
+
+	dubsman
+		name = "Dubsman"
+		icon_state = "hair_dubsman"
+
+	blackswordsman
+		name = "Black Swordsman"
+		icon_state = "hair_blackswordsman"
+
+	mentalist
+		name = "Mentalist"
+		icon_state = "hair_mentalist"
+
+	fujisaki
+		name = "Fujisaki"
+		icon_state = "hair_fujisaki"
+
+	schierke
+		name = "Schierke"
+		icon_state = "hair_schierke"
+
+	akari
+		name = "Akari"
+		icon_state = "hair_akari"
+
+	fujiyabashi
+		name = "Fujiyabashi"
+		icon_state = "hair_fujiyabashi"
+
+	nia
+		name = "Nia"
+		icon_state = "hair_nia"
+
+	shinobu
+		name = "Shinobu"
+		icon_state = "hair_shinobu"
+
+	ramona
+		name = "Ramona"
+		icon_state = "hair_ramona"
+
+	megaeyebrows
+		name = "Mega Eyebrows"
+		icon_state = "hair_megaeyebrow"
 
 /////////////////////////////
 // Facial Hair Definitions //
@@ -559,11 +687,20 @@
 		icon_state = "bl_shirt"
 		gender = NEUTER
 
+	black_shirt2
+		name = "Black Shirt 2"
+		icon_state = "bl_shirt2"
+		gender = NEUTER
+
 	white_shirt
 		name = "White Shirt"
 		icon_state = "wt_shirt"
 		gender = NEUTER
 
+	white_shirt2
+		name = "White Shirt 2"
+		icon_state = "wt_shirt2"
+		gender = NEUTER
 
 	black_tank_top
 		name = "Black Tank Top"
@@ -704,3 +841,100 @@
 		name = "Skull Shirt"
 		icon_state = "skullshirt"
 		gender = NEUTER
+
+	commie_shirt
+		name = "Question Shirt"
+		icon_state = "watshirt"
+		gender = NEUTER
+
+	nano_shirt
+		name = "Nanotrasen Shirt"
+		icon_state = "skullshirt"
+		gender = NEUTER
+
+///////////////////////
+// Socks Definitions //
+///////////////////////
+
+/datum/sprite_accessory/socks
+	icon = 'icons/mob/socks.dmi'
+
+	none
+		name = "None"
+		icon_state = null
+		gender = NEUTER
+
+	white_norm
+		name = "Normal White"
+		icon_state = "white_norm"
+		gender = NEUTER
+
+	black_norm
+		name = "Normal Black"
+		icon_state = "black_norm"
+		gender = NEUTER
+
+	white_short
+		name = "Short White"
+		icon_state = "white_short"
+		gender = NEUTER
+
+	black_short
+		name = "Short Black"
+		icon_state = "black_short"
+		gender = NEUTER
+
+	white_knee
+		name = "Knee-high White"
+		icon_state = "white_knee"
+		gender = NEUTER
+
+	black_knee
+		name = "Knee-high Black"
+		icon_state = "black_knee"
+		gender = NEUTER
+
+	thin_knee
+		name = "Knee-high Thin"
+		icon_state = "thin_knee"
+		gender = FEMALE
+
+	striped_knee
+		name = "Knee-high Striped"
+		icon_state = "striped_knee"
+		gender = NEUTER
+
+	rainbow_knee
+		name = "Knee-high Rainbow"
+		icon_state = "rainbow_knee"
+		gender = NEUTER
+
+	white_thigh
+		name = "Thigh-high White"
+		icon_state = "white_thigh"
+		gender = NEUTER
+
+	black_thigh
+		name = "Thigh-high Black"
+		icon_state = "black_thigh"
+		gender = NEUTER
+
+	thin_thigh
+		name = "Thigh-high Thin"
+		icon_state = "thin_thigh"
+		gender = FEMALE
+
+	striped_thigh
+		name = "Thigh-high Striped"
+		icon_state = "striped_thigh"
+		gender = NEUTER
+
+	rainbow_thigh
+		name = "Thigh-high Rainbow"
+		icon_state = "rainbow_thigh"
+		gender = NEUTER
+
+	pantyhose
+		name = "Pantyhose"
+		icon_state = "pantyhose"
+		gender = FEMALE

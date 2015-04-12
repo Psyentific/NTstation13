@@ -85,9 +85,10 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 	return
 
 /datum/game_mode/changeling/make_antag_chance(var/mob/living/carbon/human/character) //Assigns changeling to latejoiners
-	if(changelings.len >= round(joined_player_list.len / config.changeling_scaling_coeff) + 1) //Caps number of latejoin antagonists
+	var/changelingcap = round(joined_player_list.len / config.changeling_scaling_coeff)
+	if(changelings.len >= changelingcap + 1) //Caps number of latejoin antagonists
 		return
-	if (prob(100/config.changeling_scaling_coeff))
+	if(changelings.len <= (changelingcap - 1) || prob(100 / config.changeling_scaling_coeff))
 		if(character.client.prefs.be_special & BE_CHANGELING)
 			if(!jobban_isbanned(character.client, "changeling") && !jobban_isbanned(character.client, "Syndicate"))
 				if(!(character.job in ticker.mode.restricted_jobs))
@@ -102,7 +103,7 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 
 	var/datum/objective/absorb/absorb_objective = new
 	absorb_objective.owner = changeling
-	absorb_objective.gen_amount_goal(6, 8)
+	absorb_objective.gen_amount_goal(2, 4)
 	changeling.objectives += absorb_objective
 
 	var/datum/objective/assassinate/kill_objective = new
@@ -110,17 +111,10 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 	kill_objective.find_target()
 	changeling.objectives += kill_objective
 
-	switch(rand(1,100))
-		if(1 to 60)
-			var/datum/objective/steal/steal_objective = new
-			steal_objective.owner = changeling
-			steal_objective.find_target()
-			changeling.objectives += steal_objective
-		else
-			var/datum/objective/debrain/debrain_objective = new
-			debrain_objective.owner = changeling
-			debrain_objective.find_target()
-			changeling.objectives += debrain_objective
+	var/datum/objective/steal/steal_objective = new
+	steal_objective.owner = changeling
+	steal_objective.find_target()
+	changeling.objectives += steal_objective
 
 	if (!(locate(/datum/objective/escape) in changeling.objectives))
 		var/datum/objective/escape/escape_objective = new
@@ -138,7 +132,7 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 	if (changeling.current.mind)
 		if (changeling.current.mind.assigned_role == "Clown")
 			changeling.current << "You have evolved beyond your clownish nature, allowing you to wield weapons without harming yourself."
-			changeling.current.mutations.Remove(CLUMSY)
+			changeling.current.remove_organic_effect(/datum/organic_effect/clumsy)
 
 	var/obj_count = 1
 	for(var/datum/objective/objective in changeling.objectives)
@@ -266,18 +260,22 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 		return
 	if(!target)
 		return
-	if(NOCLONE in target.mutations || HUSK in target.mutations)
+	if(target.has_organic_effect(/datum/organic_effect/noclone) || target.has_organic_effect(/datum/organic_effect/husk))
 		user << "<span class='warning'>DNA of [target] is ruined beyond usability!</span>"
 		return
 	if(!ishuman(target))//Absorbing monkeys is entirely possible, but it can cause issues with transforming. That's what lesser form is for anyway!
 		user << "<span class='warning'>We could gain no benefit from absorbing a lesser creature.</span>"
 		return
+	if(!check_dna_integrity(target))
+		user << "<span class='warning'>[target] is not compatible with our biology.</span>"
+		return
+	return 1
+
+/datum/changeling/proc/can_extract_sting(var/mob/living/carbon/user, var/mob/living/carbon/target)
+	if(can_absorb_dna(user, target) != 1) return
 	var/datum/dna/tDna = target.dna
 	for(var/datum/dna/D in absorbed_dna)
 		if(tDna.is_same_as(D))
 			user << "<span class='warning'>We already have that DNA in storage.</span>"
 			return
-	if(!check_dna_integrity(target))
-		user << "<span class='warning'>[target] is not compatible with our biology.</span>"
-		return
 	return 1

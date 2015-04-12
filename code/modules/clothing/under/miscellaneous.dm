@@ -246,7 +246,7 @@
 	can_roll = 0
 
 /obj/item/clothing/under/schoolgirl
-	name = "schoolgirl uniform"
+	name = "blue schoolgirl uniform"
 	desc = "It's just like one of my Japanese animes!"
 	icon_state = "schoolgirl"
 	item_state = "schoolgirl"
@@ -255,12 +255,46 @@
 	fitted = 0
 	can_roll = 0
 
+/obj/item/clothing/under/schoolgirl/red
+	name = "red schoolgirl uniform"
+	icon_state = "schoolgirlred"
+	item_state = "schoolgirlred"
+	item_color = "schoolgirlred"
+
+/obj/item/clothing/under/schoolgirl/green
+	name = "green schoolgirl uniform"
+	icon_state = "schoolgirlgreen"
+	item_state = "schoolgirlgreen"
+	item_color = "schoolgirlgreen"
+
+/obj/item/clothing/under/schoolgirl/orange
+	name = "orange schoolgirl uniform"
+	icon_state = "schoolgirlorange"
+	item_state = "schoolgirlorange"
+	item_color = "schoolgirlorange"
+
 /obj/item/clothing/under/overalls
 	name = "laborer's overalls"
 	desc = "A set of durable overalls for getting the job done."
 	icon_state = "overalls"
 	item_state = "lb_suit"
 	item_color = "overalls"
+
+/obj/item/clothing/under/color/brownoveralls
+	name = "brown overalls"
+	desc = "A set of old brown overalls for getting the job done."
+	icon_state = "b-overalls"
+	item_state = "lb_suit"
+	item_color = "b-overalls"
+	can_roll = 0
+
+/obj/item/clothing/under/redoveralls
+	name = "red overalls"
+	desc = "A set of tough red overalls for getting the job done."
+	icon_state = "r-overalls"
+	item_state = "lb_suit"
+	item_color = "r-overalls"
+	can_roll = 0
 
 /obj/item/clothing/under/pirate
 	name = "pirate outfit"
@@ -365,5 +399,69 @@
 	icon_state = "black_tango"
 	item_state = "wcoat"
 	item_color = "black_tango"
+	fitted = 0
+	can_roll = 0
+
+/obj/item/clothing/under/maid
+	name = "maid costume"
+	desc = "Maid in China."
+	icon_state = "maid"
+	item_state = "maid"
+	item_color = "maid"
+	body_parts_covered = CHEST|GROIN
+	fitted = 0
+	can_roll = 0
+
+/obj/item/clothing/under/janimaid
+	name = "maid uniform"
+	desc = "A simple maid uniform for housekeeping."
+	icon_state = "janimaid"
+	item_state = "janimaid"
+	item_color = "janimaid"
+	body_parts_covered = CHEST|GROIN
+	fitted = 0
+	can_roll = 0
+
+/obj/item/clothing/under/jeans
+	name = "jeans"
+	desc = "A pair of tough blue jeans."
+	icon_state = "jeans"
+	item_state = "jeans"
+	item_color = "jeans"
+	gender = PLURAL
+	body_parts_covered = GROIN|LEGS
+	fitted = 0
+	can_roll = 0
+
+/obj/item/clothing/under/trackpants
+	name = "track pants"
+	desc = "A pair of track pants, for the athletic."
+	icon_state = "trackpants"
+	item_state = "trackpants"
+	item_color = "trackpants"
+	gender = PLURAL
+	body_parts_covered = GROIN|LEGS
+	fitted = 0
+	can_roll = 0
+
+/obj/item/clothing/under/khaki
+	name = "khaki pants"
+	desc = "A pair of dust beige khaki pants."
+	icon_state = "khaki"
+	item_state = "khaki"
+	item_color = "khaki"
+	gender = PLURAL
+	body_parts_covered = GROIN|LEGS
+	fitted = 0
+	can_roll = 0
+
+/obj/item/clothing/under/camo
+	name = "camouflage pants"
+	desc = "A pair of woodland camouflage pants, not good for camouflage in this enviornment."
+	icon_state = "camopants"
+	item_state = "camopants"
+	item_color = "camopants"
+	gender = PLURAL
+	body_parts_covered = GROIN|LEGS
 	fitted = 0
 	can_roll = 0

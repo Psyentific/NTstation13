@@ -209,6 +209,7 @@
 
 	overlays -= "eyes" //Takes off the eyes that it started with
 
+	playsound(loc, 'sound/effects/transform.ogg', 75, 1)
 	transform_animation(animation_length)
 	notify_ai(2)
 	updateicon()
@@ -336,20 +337,8 @@
 		if(3.0)
 			if (stat != 2)
 				adjustBruteLoss(30)
-
 	return
 
-
-/mob/living/silicon/robot/meteorhit(obj/O as obj)
-	for(var/mob/M in viewers(src, null))
-		M.show_message(text("\red [src] has been hit by [O]"), 1)
-		//Foreach goto(19)
-	if (health > 0)
-		adjustBruteLoss(30)
-		if ((O.icon_state == "flaming"))
-			adjustFireLoss(40)
-		updatehealth()
-	return
 
 
 /mob/living/silicon/robot/bullet_act(var/obj/item/projectile/Proj)
@@ -744,7 +733,7 @@
 		updatehealth()
 
 
-/mob/living/silicon/robot/attack_hand(mob/user)
+/mob/living/silicon/robot/attack_hand(mob/living/carbon/human/user)
 
 	add_fingerprint(user)
 
@@ -756,11 +745,17 @@
 			user << "You remove \the [cell]."
 			cell = null
 			updateicon()
+		return
 
 	if(!opened && (!istype(user, /mob/living/silicon)))
 		if (user.a_intent == "help")
 			user.visible_message("<span class='notice'>[user] pets [src]!</span>", \
 								"<span class='notice'>You pet [src]!</span>")
+
+		else
+			if((user.a_intent == "harm") && user.has_organic_effect(/datum/organic_effect/hulk))
+				spark_system.start()
+			return ..(user)
 
 /mob/living/silicon/robot/attack_paw(mob/user)
 
@@ -1038,6 +1033,11 @@
 	set name = "State Laws"
 
 	checklaws()
+
+/mob/living/silicon/robot/sensor_mode() //Medical/Security HUD controller for borgs
+	set category = "Robot Commands"
+	set desc = "Augment visual feed with internal sensor overlays."
+	..()
 
 /mob/living/silicon/robot/proc/deconstruct()
 	var/turf/T = get_turf(src)

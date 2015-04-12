@@ -105,7 +105,7 @@
 	new /obj/item/clothing/under/gimmick/rank/captain/suit(src.loc)
 	new /obj/item/clothing/head/flatcap(src.loc)
 	new /obj/item/clothing/suit/labcoat/mad(src.loc)
-	new /obj/item/clothing/glasses/gglasses(src.loc)
+	new /obj/item/clothing/glasses/greenglasses(src.loc)
 	qdel(src)
 
 /obj/effect/landmark/costume/elpresidente/New()
@@ -116,7 +116,8 @@
 	qdel(src)
 
 /obj/effect/landmark/costume/nyangirl/New()
-	new /obj/item/clothing/under/schoolgirl(src.loc)
+	var/CHOICE = pick( /obj/item/clothing/under/schoolgirl , /obj/item/clothing/under/blackskirt )
+	new CHOICE(src.loc)
 	new /obj/item/clothing/head/kitty(src.loc)
 	if (prob(50))
 		new /obj/item/clothing/glasses/sunglasses/blindfold(src.loc)
@@ -125,9 +126,10 @@
 	qdel(src)
 
 /obj/effect/landmark/costume/maid/New()
-	new /obj/item/clothing/under/blackskirt(src.loc)
-	var/CHOICE = pick( /obj/item/clothing/head/beret , /obj/item/clothing/head/rabbitears )
-	new CHOICE(src.loc)
+	var/CHOICEUNI = pick( /obj/item/clothing/under/maid , /obj/item/clothing/under/janimaid )
+	new CHOICEUNI(src.loc)
+	var/CHOICEHEAD = pick( /obj/item/clothing/head/maidbow , /obj/item/clothing/head/rabbitears )
+	new CHOICEHEAD(src.loc)
 	if (prob(50))
 		new /obj/item/clothing/glasses/sunglasses/blindfold(src.loc)
 	else
@@ -142,7 +144,7 @@
 
 /obj/effect/landmark/costume/scratch/New()
 	new /obj/item/clothing/gloves/white(src.loc)
-	new /obj/item/clothing/shoes/white(src.loc)
+	new /obj/item/clothing/shoes/sneakers/white(src.loc)
 	new /obj/item/clothing/under/scratch(src.loc)
 	if (prob(30))
 		new /obj/item/clothing/head/cueball(src.loc)
@@ -158,7 +160,7 @@
 	new /obj/item/clothing/glasses/monocle(src.loc)
 	var/CHOICE= pick( /obj/item/clothing/head/bowler, /obj/item/clothing/head/that)
 	new CHOICE(src.loc)
-	new /obj/item/clothing/shoes/black(src.loc)
+	new /obj/item/clothing/shoes/sneakers/black(src.loc)
 	new /obj/item/weapon/cane(src.loc)
 	new /obj/item/clothing/under/sl_suit(src.loc)
 	new /obj/item/clothing/mask/fakemoustache(src.loc)

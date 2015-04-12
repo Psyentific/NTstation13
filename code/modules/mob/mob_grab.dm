@@ -38,6 +38,10 @@
 /obj/item/weapon/grab/Destroy()
 	if(affecting)
 		affecting.grabbed_by -= src
+		affecting = null
+	if(assailant)
+		assailant.client.screen -= hud
+		assailant = null
 	qdel(hud)
 	..()
 
@@ -61,7 +65,8 @@
 
 
 /obj/item/weapon/grab/process()
-	confirm()
+	if(!confirm())
+		return 0
 
 	if(assailant.client)
 		assailant.client.screen -= hud
@@ -194,7 +199,7 @@
 		return
 
 	if(M == assailant && state >= GRAB_AGGRESSIVE)
-		if( (ishuman(user) && (FAT in user.mutations) && ismonkey(affecting) ) || ( isalien(user) && iscarbon(affecting) ) )
+		if( (ishuman(user) && user.has_organic_effect(/datum/organic_effect/fat) && ismonkey(affecting) ) || ( isalien(user) && iscarbon(affecting) ) )
 			var/mob/living/carbon/attacker = user
 			user.visible_message("<span class='danger'>[user] is attempting to devour [affecting]!</span>")
 			if(istype(user, /mob/living/carbon/alien/humanoid/hunter))

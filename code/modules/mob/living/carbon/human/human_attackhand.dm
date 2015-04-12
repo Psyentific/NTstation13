@@ -1,4 +1,7 @@
 /mob/living/carbon/human/attack_hand(mob/living/carbon/human/M)
+	if(!istype(M))
+		return
+
 	if(..())	//to allow surgery to return properly.
 		return
 
@@ -86,7 +89,7 @@
 			var/obj/item/organ/limb/affecting = get_organ(ran_zone(M.zone_sel.selecting))
 			var/armor_block = run_armor_check(affecting, "melee")
 
-			if(HULK in M.mutations)
+			if(M.has_organic_effect(/datum/organic_effect/hulk))
 				damage += 5
 
 			switch(attack_verb)

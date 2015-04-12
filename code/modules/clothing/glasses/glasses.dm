@@ -1,15 +1,28 @@
 /obj/item/clothing/glasses/meson
 	name = "Optical Meson Scanner"
-	desc = "Used for seeing walls, floors, and stuff through anything."
+	desc = "Used by engineering and mining staff to see basic structural and terrain layouts through walls, regardless of lighting condition."
 	icon_state = "meson"
 	item_state = "glasses"
 	origin_tech = "magnets=2;engineering=2"
+	darkness_view = 1
 	vision_flags = SEE_TURFS
-
-/obj/item/clothing/glasses/meson/advanced
-	name = "Advanced Optical Meson Scanner"
-	desc = "More powerful than your standard mesons, these ones make everything appear to be lit extremely brightly."
 	invis_view = SEE_INVISIBLE_MINIMUM
+
+/obj/item/clothing/glasses/meson/adv
+	name = "Advanced Meson Scanner"
+	desc = "Used by engineering and mining staff to see basic structural and terrain layouts through walls, regardless of lighting condition."
+	darkness_view = 4
+	origin_tech = "magnets=3;engineering=3"
+	hud = 1
+
+/obj/item/clothing/glasses/meson/adv/process_hud(var/mob/M)
+	process_mining_hud(M)
+
+/obj/item/clothing/glasses/meson/gar
+	name = "Gar Mesons"
+	icon_state = "garm"
+	item_state = "garm"
+	desc = "Do the impossible, see the invisible!"
 
 /obj/item/clothing/glasses/science
 	name = "Science Goggles"
@@ -31,6 +44,12 @@
 	desc = "Yarr."
 	icon_state = "eyepatch"
 	item_state = "eyepatch"
+
+/obj/item/clothing/glasses/threed
+	name = "3D glasses"
+	desc = "A pair of glasses used to watch films in red-cyan anaglyph 3D."
+	icon_state = "threed"
+	item_state = "glasses"
 
 /obj/item/clothing/glasses/monocle
 	name = "monocle"
@@ -59,11 +78,60 @@
 	icon_state = "hipster_glasses"
 	item_state = "hipster_glasses"
 
-/obj/item/clothing/glasses/gglasses
+/obj/item/clothing/glasses/greenglasses
 	name = "Green Glasses"
-	desc = "Forest green glasses, like the kind you'd wear when hatching a nasty scheme."
-	icon_state = "gglasses"
-	item_state = "gglasses"
+	desc = "Green-framed prescription glasses, like the kind you'd wear when hatching a nasty scheme."
+	icon_state = "greenglasses"
+	item_state = "greenglasses"
+
+/obj/item/clothing/glasses/redglasses
+	name = "Red Glasses"
+	desc = "Red-framed prescription glasses."
+	icon_state = "redglasses"
+	item_state = "redglasses"
+
+/obj/item/clothing/glasses/blueglasses
+	name = "Blue Glasses"
+	desc = "Blue-framed prescription glasses."
+	icon_state = "blueglasses"
+	item_state = "blueglasses"
+
+/obj/item/clothing/glasses/yellowglasses
+	name = "Yellow Glasses"
+	desc = "Yellow-framed prescription glasses."
+	icon_state = "yellowglasses"
+	item_state = "yellowglasses"
+
+/obj/item/clothing/glasses/brownglasses
+	name = "Brown Glasses"
+	desc = "Brown-framed prescription glasses."
+	icon_state = "brownglasses"
+	item_state = "brownglasses"
+
+/obj/item/clothing/glasses/pinkglasses
+	name = "Pink Glasses"
+	desc = "Pink-framed prescription glasses."
+	icon_state = "pinkglasses"
+	item_state = "pinkglasses"
+
+/obj/item/clothing/glasses/orangeglasses
+	name = "Orange Glasses"
+	desc = "Orange-framed prescription glasses."
+	icon_state = "orangeglasses"
+	item_state = "orangeglasses"
+
+/obj/item/clothing/glasses/purpleglasses
+	name = "Purple Glasses"
+	desc = "Purple-framed prescription glasses."
+	icon_state = "purpleglasses"
+	item_state = "purpleglasses"
+
+/obj/item/clothing/glasses/clearglasses
+	name = "Clear Glasses"
+	desc = "Clear-framed prescription glasses."
+	icon_state = "clearglasses"
+	item_state = "clearglasses"
+
 
 /obj/item/clothing/glasses/sunglasses
 	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Enhanced shielding blocks many flashes."
@@ -88,7 +156,7 @@
 	desc = "Believe in us humans."
 	name = "black super gar glasses"
 	icon_state = "supergarb"
-	item_state = "supergarb"
+	item_state = "garb"
 	force = 12
 	throwforce = 12
 	attack_verb = list("sliced")
@@ -108,7 +176,7 @@
 	desc = "We evolve past the person we were a minute before. Little by little we advance with each turn. That's how a drill works!"
 	name = "super gar glasses"
 	icon_state = "supergar"
-	item_state = "supergar"
+	item_state = "gar"
 	force = 12
 	throwforce = 12
 	attack_verb = list("sliced")
@@ -176,7 +244,7 @@
 
 /obj/item/clothing/glasses/thermal/syndi	//These are now a traitor item, concealed as mesons.	-Pete
 	name = "Optical Meson Scanner"
-	desc = "Used for seeing walls, floors, and stuff through anything."
+	desc = "Used by engineering and mining staff to see basic structural and terrain layouts through walls, regardless of lighting condition."
 	icon_state = "meson"
 	origin_tech = "magnets=3;syndicate=4"
 
@@ -197,3 +265,25 @@
 	desc = "A set of implantable lenses designed to augment your vision"
 	icon_state = "thermalimplants"
 	item_state = "syringe_kit"
+
+//Hypno-spectacles, that do absolutely nothing.
+
+/obj/item/clothing/glasses/hypno
+	name = "hypno-spectacles"
+	desc = "A pair of glasses which claim to have the ability to hypnotize people."
+	icon_state = "hypnospecs"
+	item_state = "glasses"
+	action_button_name = "Activate Hypno-Spectacles"
+	var/cooldown = 0
+
+/obj/item/clothing/glasses/hypno/attack_self(mob/user)
+	if (user.get_item_by_slot(slot_glasses) != src)
+		user << "<span class='alert'>You must be wearing the glasses to ogle.</span>"
+		return
+	if (cooldown < world.time)
+		cooldown = world.time + 600 //1 minute.
+		user.visible_message("<span class='warning'>[user] ogles you disconcertingly!</span>", "<span class='notice'>You ogle everyone nearby.</span>")
+	else
+		var/timeleft = (cooldown - world.time)
+		user << "<span class='notice'>The glasses are recharging, you must wait [round(timeleft/10)] seconds before you can ogle again.</span>"
+

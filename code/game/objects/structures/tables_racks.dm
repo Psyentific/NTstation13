@@ -465,7 +465,7 @@
 		return
 
 /obj/structure/table/attack_paw(mob/user)
-	if(HULK in user.mutations)
+	if(user.has_organic_effect(/datum/organic_effect/hulk))
 		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 		visible_message("<span class='danger'>[user] smashes the table apart!</span>")
 		if(istype(src, /obj/structure/table/reinforced))
@@ -506,7 +506,7 @@
 
 
 /obj/structure/table/attack_hand(mob/user)
-	if(HULK in user.mutations)
+	if(user.has_organic_effect(/datum/organic_effect/hulk))
 		visible_message("<span class='danger'>[user] smashes [src] apart!</span>")
 		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 		if(istype(src, /obj/structure/table/reinforced))
@@ -527,6 +527,8 @@
 	if(air_group || (height==0)) return 1
 
 	if(istype(mover) && mover.checkpass(PASSTABLE))
+		return 1
+	if(locate(/obj/structure/table) in get_turf(mover))
 		return 1
 	else
 		return 0
@@ -715,7 +717,9 @@ Destroy type values:
 		return
 	if(isrobot(user))
 		return
-	user.drop_item()
+	if(!user.drop_item())
+		user << "<span class='notice'>\The [O] is stuck to your hand, you cannot put it in the rack!</span>"
+		return
 	if (O.loc != src.loc)
 		step(O, get_dir(O, src))
 	return
@@ -729,16 +733,15 @@ Destroy type values:
 
 	if(isrobot(user))
 		return
-	user.drop_item()
+	if(!user.drop_item())
+		user << "<span class='notice'>\The [W] is stuck to your hand, you cannot put it in the rack!</span>"
+		return
 	if(W && W.loc)	W.loc = src.loc
 	return 1
 
-/obj/structure/rack/meteorhit(obj/O as obj)
-	qdel(src)
-
 
 /obj/structure/rack/attack_hand(mob/user)
-	if(HULK in user.mutations)
+	if(user.has_organic_effect(/datum/organic_effect/hulk))
 		visible_message("<span class='danger'>[user] smashes [src] apart!</span>")
 		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 		new /obj/item/weapon/rack_parts(loc)
@@ -747,7 +750,7 @@ Destroy type values:
 
 
 /obj/structure/rack/attack_paw(mob/user)
-	if(HULK in user.mutations)
+	if(user.has_organic_effect(/datum/organic_effect/hulk))
 		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 		visible_message("<span class='danger'>[user] smashes [src] apart!</span>")
 		new /obj/item/weapon/rack_parts(loc)

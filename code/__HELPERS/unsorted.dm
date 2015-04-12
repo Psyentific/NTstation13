@@ -138,44 +138,97 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 	return destination
 
+///////////////////
+//A* helpers procs
+///////////////////
 
+// Returns true if a link between A and B is blocked
+// Movement through doors allowed if ID has access
+/proc/LinkBlockedWithAccess(turf/A, turf/B, obj/item/weapon/card/id/ID)
 
-/proc/LinkBlocked(turf/A, turf/B)
 	if(A == null || B == null) return 1
 	var/adir = get_dir(A,B)
 	var/rdir = get_dir(B,A)
-	if((adir & (NORTH|SOUTH)) && (adir & (EAST|WEST)))	//	diagonal
-		var/iStep = get_step(A,adir&(NORTH|SOUTH))
-		if(!LinkBlocked(A,iStep) && !LinkBlocked(iStep,B)) return 0
+	if(adir & (adir-1))	//	diagonal
+		var/turf/iStep = get_step(A,adir&(NORTH|SOUTH))
+		if(!iStep.density && !LinkBlockedWithAccess(A,iStep, ID) && !LinkBlockedWithAccess(iStep,B,ID))
+			return 0
 
-		var/pStep = get_step(A,adir&(EAST|WEST))
-		if(!LinkBlocked(A,pStep) && !LinkBlocked(pStep,B)) return 0
+		var/turf/pStep = get_step(A,adir&(EAST|WEST))
+		if(!pStep.density && !LinkBlockedWithAccess(A,pStep,ID) && !LinkBlockedWithAccess(pStep,B,ID))
+			return 0
+
+		return 1
+
+	if(DirBlockedWithAccess(A,adir, ID))
+		return 1
+
+	if(DirBlockedWithAccess(B,rdir, ID))
+		return 1
+
+	for(var/obj/O in B)
+		if(O.density && !istype(O, /obj/machinery/door) && !(O.flags & ON_BORDER))
+			return 1
+
+	return 0
+
+// Returns true if direction is blocked from loc
+// Checks doors against access with given ID
+/proc/DirBlockedWithAccess(turf/loc,var/dir,var/obj/item/weapon/card/id/ID)
+	for(var/obj/structure/window/D in loc)
+		if(!D.density)			continue
+		if(D.dir == SOUTHWEST)	return 1 //full-tile window
+		if(D.dir == dir)		return 1 //matching border window
+
+	for(var/obj/machinery/door/D in loc)
+		if(!D.CanAStarPass(ID,dir))
+			return 1
+	return 0
+
+// Returns true if a link between A and B is blocked
+// Movement through doors allowed if door is open
+/proc/LinkBlocked(turf/A, turf/B)
+	if(A == null || B == null)
+		return 1
+
+	var/adir = get_dir(A,B)
+	var/rdir = get_dir(B,A)
+	if(adir & (adir-1)) //diagonal
+		var/turf/iStep = get_step(A,adir & (NORTH|SOUTH)) //check the north/south component
+		if(!iStep.density && !LinkBlocked(A,iStep) && !LinkBlocked(iStep,B))
+			return 0
+
+		var/turf/pStep = get_step(A,adir & (EAST|WEST)) //check the east/west component
+		if(!pStep.density && !LinkBlocked(A,pStep) && !LinkBlocked(pStep,B))
+			return 0
+
 		return 1
 
 	if(DirBlocked(A,adir)) return 1
 	if(DirBlocked(B,rdir)) return 1
+
+	for(var/obj/O in B)
+		if(O.density && !istype(O, /obj/machinery/door) && !(O.flags & ON_BORDER))
+			return 1
+
 	return 0
 
+// Returns true if direction is blocked from loc
+// Checks if doors are open
 
 /proc/DirBlocked(turf/loc,var/dir)
 	for(var/obj/structure/window/D in loc)
 		if(!D.density)			continue
-		if(D.dir == SOUTHWEST)	return 1
-		if(D.dir == dir)		return 1
+		if(D.dir == SOUTHWEST)	return 1 //full-tile window
+		if(D.dir == dir)		return 1 //matching border window
 
 	for(var/obj/machinery/door/D in loc)
-		if(!D.density)			continue
-		if(istype(D, /obj/machinery/door/window))
-			if((dir & SOUTH) && (D.dir & (EAST|WEST)))		return 1
-			if((dir & EAST ) && (D.dir & (NORTH|SOUTH)))	return 1
-		else return 1	// it's a real, air blocking door
+		if(!D.density)//if the door is open
+			continue
+		else return 1	// if closed, it's a real, air blocking door
 	return 0
 
-/proc/TurfBlockedNonWindow(turf/loc)
-	for(var/obj/O in loc)
-		if(O.density && !istype(O, /obj/structure/window))
-			return 1
-	return 0
+/////////////////////////////////////////////////////////////////////////
 
 /proc/getline(atom/M,atom/N)//Ultra-Fast Bresenham Line-Drawing Algorithm
 	var/px=M.x		//starting x
@@ -249,6 +302,12 @@ Turf and target are seperate in case you want to teleport some distance from a t
 		if(C.dna)
 			C.dna.real_name = real_name
 
+	if(isAI(src))
+		var/mob/living/silicon/ai/AI = src
+		if(oldname != real_name)
+			for(var/mob/living/silicon/robot/Slave in AI.connected_robots)
+				Slave.show_laws()
+
 	if(isrobot(src))
 		var/mob/living/silicon/robot/R = src
 		if(oldname != real_name)
@@ -272,7 +331,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 				var/obj/item/weapon/card/id/ID = A
 				if(ID.registered_name == oldname)
 					ID.registered_name = newname
-					ID.name = "[newname]'s ID Card ([ID.assignment])"
+					ID.update_label()
 					if(!search_pda)	break
 					search_id = 0
 
@@ -280,7 +339,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 				var/obj/item/device/pda/PDA = A
 				if(PDA.owner == oldname)
 					PDA.owner = newname
-					PDA.name = "PDA-[newname] ([PDA.ownjob])"
+					PDA.update_label()
 					if(!search_id)	break
 					search_pda = 0
 
@@ -336,6 +395,10 @@ Turf and target are seperate in case you want to teleport some distance from a t
 				if(A.aiPDA)
 					A.aiPDA.owner = newname
 					A.aiPDA.name = newname + " (" + A.aiPDA.ownjob + ")"
+
+				// Notify Cyborgs
+				for(var/mob/living/silicon/robot/Slave in A.connected_robots)
+					Slave.show_laws()
 
 		if(cmptext("cyborg",role))
 			if(isrobot(src))
@@ -524,6 +587,14 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 /proc/key_name_admin(var/whom, var/include_name = 1)
 	return key_name(whom, 1, include_name)
+
+/proc/get_mob_by_ckey(var/key)
+	if(!key)
+		return
+	var/list/mobs = sortmobs()
+	for(var/mob/M in mobs)
+		if(M.ckey == key)
+			return M
 
 // Returns the atom sitting on the turf.
 // For example, using this on a disk, which is in a bag, on a mob, will return the mob because it's on the turf.
@@ -716,7 +787,7 @@ atom/proc/CheckForNukeDisk()
 	else
 		return 0
 
-/proc/do_after(var/mob/user as mob, delay as num, var/numticks = 5, var/needhand = 1)
+/proc/do_after(mob/user, delay, numticks = 5, needhand = 1)
 	if(!user || isnull(user))
 		return 0
 	if(numticks == 0)
@@ -725,6 +796,9 @@ atom/proc/CheckForNukeDisk()
 	var/delayfraction = round(delay/numticks)
 	var/turf/T = user.loc
 	var/holding = user.get_active_hand()
+	var/holdingnull = 1
+	if(holding)
+		holdingnull = 0
 
 	for(var/i = 0, i<numticks, i++)
 		sleep(delayfraction)
@@ -732,8 +806,13 @@ atom/proc/CheckForNukeDisk()
 
 		if(!user || user.stat || user.weakened || user.stunned || !(user.loc == T))
 			return 0
-		if(needhand && !(user.get_active_hand() == holding))	//Sometimes you don't want the user to have to keep their active hand
-			return 0
+
+		if(needhand)	//Sometimes you don't want the user to have to keep their active hand
+			if(!holdingnull)
+				if(!holding)
+					return 0
+			if(user.get_active_hand() != holding)
+				return 0
 
 	return 1
 
@@ -1185,7 +1264,7 @@ proc/is_hot(obj/item/W as obj)
 				return 1000
 			else
 				return 0
-		if(/obj/item/weapon/pickaxe/plasmacutter)
+		if(/obj/item/weapon/gun/energy/plasmacutter)
 			return 3800
 		if(/obj/item/weapon/melee/energy)
 			return 3500

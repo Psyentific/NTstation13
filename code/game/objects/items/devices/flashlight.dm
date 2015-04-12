@@ -49,10 +49,10 @@
 	add_fingerprint(user)
 	if(on && user.zone_sel.selecting == "eyes")
 
-		if(((CLUMSY in user.mutations) || user.getBrainLoss() >= 60) && prob(50))	//too dumb to use flashlight properly
+		if((user.has_organic_effect(/datum/organic_effect/clumsy) || user.getBrainLoss() >= 60) && prob(50))	//too dumb to use flashlight properly
 			return ..()	//just hit them in the head
 
-		if(!(istype(user, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")	//don't have dexterity
+		if(!user.IsAdvancedToolUser())	//don't have dexterity
 			user << "<span class='notice'>You don't have the dexterity to do this!</span>"
 			return
 
@@ -77,7 +77,7 @@
 		if(istype(M, /mob/living/carbon/human) || istype(M, /mob/living/carbon/monkey))	//robots and aliens are unaffected
 			if(M.stat == DEAD || M.sdisabilities & BLIND)	//mob is dead or fully blind
 				user << "<span class='notice'>[M] pupils does not react to the light!</span>"
-			else if(XRAY in M.mutations)	//mob has X-RAY vision
+			else if(M.has_organic_effect(/datum/organic_effect/xray))	//mob has X-RAY vision
 				user << "<span class='notice'>[M] pupils give an eerie glow!</span>"
 			else	//they're okay!
 				if(!M.blinded)
@@ -113,7 +113,9 @@
 	desc = "A robust flashlight used by security."
 	icon_state = "seclite"
 	item_state = "seclite"
-	force = 9 // Not as good as a stun baton.
+	force = 10 // Not as good as a stun baton.
+	attack_verb = list("beaten")
+	hitsound = 'sound/weapons/genhit1.ogg'
 	brightness_on = 5 // A little better than the standard flashlight.
 
 

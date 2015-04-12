@@ -145,12 +145,13 @@
 			dat += "<h3>Leather:</h3>"
 			dat += "<div class='statusDisplay'>"
 			dat += "Wallet: <A href='?src=\ref[src];action=create;item=wallet'>Make</A> ([100/efficiency])<BR>"
-			dat += "Book bag: <A href='?src=\ref[src];action=create;item=bkbag'>Make</A> ([200/efficiency])<BR>"
-			dat += "Plant bag: <A href='?src=\ref[src];action=create;item=ptbag'>Make</A> ([200/efficiency])<BR>"
-			dat += "Mining satchel: <A href='?src=\ref[src];action=create;item=mnbag'>Make</A> ([200/efficiency])<BR>"
-			dat += "Botanical gloves: <A href='?src=\ref[src];action=create;item=gloves'>Make</A> ([250/efficiency])<BR>"
-			dat += "Utility belt: <A href='?src=\ref[src];action=create;item=tbelt'>Make</A> ([300/efficiency])<BR>"
+			dat += "Book Bag: <A href='?src=\ref[src];action=create;item=bkbag'>Make</A> ([200/efficiency])<BR>"
+			dat += "Plant Bag: <A href='?src=\ref[src];action=create;item=ptbag'>Make</A> ([200/efficiency])<BR>"
+			dat += "Mining Satchel: <A href='?src=\ref[src];action=create;item=mnbag'>Make</A> ([200/efficiency])<BR>"
+			dat += "Botanical Gloves: <A href='?src=\ref[src];action=create;item=gloves'>Make</A> ([250/efficiency])<BR>"
+			dat += "Leather Belt: <A href='?src=\ref[src];action=create;item=belt'>Make</A> ([300/efficiency])<BR>"
 			dat += "Leather Satchel: <A href='?src=\ref[src];action=create;item=satchel'>Make</A> ([400/efficiency])<BR>"
+			dat += "Leather Jacket: <A href='?src=\ref[src];action=create;item=jacket'>Make</A> ([400/efficiency])<BR>"
 			dat += "</div>"
 		else
 			dat += "<div class='statusDisplay'>No container inside, please insert container.</div>"
@@ -223,11 +224,9 @@
 		if("rh")
 			if (check_cost(25/efficiency)) return 0
 			else new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/rh(src.loc)
-		if("ez5") //It's not an elegant method, but it's safe and easy. -Cheridan
+		if("ez5")
 			if (check_cost(50/efficiency)) return 0
 			else
-				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/ez(src.loc)
-				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/ez(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/ez(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/ez(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/ez(src.loc)
@@ -237,13 +236,9 @@
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/l4z(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/l4z(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/l4z(src.loc)
-				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/l4z(src.loc)
-				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/l4z(src.loc)
 		if("rh5")
 			if (check_cost(125/efficiency)) return 0
 			else
-				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/rh(src.loc)
-				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/rh(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/rh(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/rh(src.loc)
 				new/obj/item/weapon/reagent_containers/glass/bottle/nutrient/rh(src.loc)
@@ -262,12 +257,15 @@
 		if("gloves")
 			if (check_cost(250/efficiency)) return 0
 			else new/obj/item/clothing/gloves/botanic_leather(src.loc)
-		if("tbelt")
+		if("belt")
 			if (check_cost(300/efficiency)) return 0
-			else new/obj/item/weapon/storage/belt/utility(src.loc)
+			else new/obj/item/weapon/storage/belt(src.loc)
 		if("satchel")
 			if (check_cost(400/efficiency)) return 0
 			else new/obj/item/weapon/storage/backpack/satchel(src.loc)
+		if("jacket")
+			if (check_cost(400/efficiency)) return 0
+			else new/obj/item/clothing/suit/labcoat/coat/jacket/leather(src.loc)
 		//if("monkey")
 		//	if (check_cost(500)) return 0
 		//	else new/mob/living/carbon/monkey(src.loc)

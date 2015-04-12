@@ -49,10 +49,10 @@
 	attack_verb = list("stabbed")
 	hitsound = 'sound/weapons/bladeslice.ogg'
 
-	suicide_act(mob/user)
-		viewers(user) << pick("<span class='suicide'>[user] is stabbing the [src.name] into \his temple! It looks like \he's trying to commit suicide.</span>", \
-							"<span class='suicide'>[user] is stabbing the [src.name] into \his heart! It looks like \he's trying to commit suicide.</span>")
-		return(BRUTELOSS)
+/obj/item/weapon/screwdriver/suicide_act(mob/user)
+	user.visible_message(pick("<span class='suicide'>[user] is stabbing the [src.name] into \his temple! It looks like \he's trying to commit suicide.</span>", \
+						"<span class='suicide'>[user] is stabbing the [src.name] into \his heart! It looks like \he's trying to commit suicide.</span>"))
+	return(BRUTELOSS)
 
 /obj/item/weapon/screwdriver/New()
 	switch(pick("red","blue","purple","brown","green","cyan","yellow"))
@@ -86,7 +86,7 @@
 	if(!istype(M))	return ..()
 	if(user.zone_sel.selecting != "eyes" && user.zone_sel.selecting != "head")
 		return ..()
-	if((CLUMSY in user.mutations) && prob(50))
+	if(user.has_organic_effect(/datum/organic_effect/clumsy) && prob(50))
 		M = user
 	return eyestab(M,user)
 
@@ -184,19 +184,19 @@
 /obj/item/weapon/weldingtool/process()
 	switch(welding)
 		if(0)
-			if(icon_state != "welder")	//Check that the sprite is correct, if it isnt, it means toggle() was not called
+			if(icon_state != initial(icon_state))	//Check that the sprite is correct, if it isnt, it means toggle() was not called
 				force = 3
 				damtype = "brute"
-				icon_state = "welder"
+				icon_state = initial(icon_state)
 				welding = 0
 			processing_objects.Remove(src)
 			return
 	//Welders left on now use up fuel, but lets not have them run out quite that fast
 		if(1)
-			if(icon_state != "welder1")	//Check that the sprite is correct, if it isnt, it means toggle() was not called
+			if(icon_state != initial(icon_state) + "1")	//Check that the sprite is correct, if it isnt, it means toggle() was not called
 				force = 15
 				damtype = "fire"
-				icon_state = "welder1"
+				icon_state = initial(icon_state) + "1"
 			if(prob(5))
 				remove_fuel(1)
 
@@ -290,7 +290,7 @@
 			force = 15
 			damtype = "fire"
 			hitsound = 'sound/items/welder.ogg'
-			icon_state = "welder1"
+			icon_state = initial(icon_state) + "1"
 			processing_objects.Add(src)
 		else
 			user << "<span class='notice'>You need more fuel.</span>"
@@ -303,7 +303,7 @@
 		force = 3
 		damtype = "brute"
 		hitsound = "swing_hit"
-		icon_state = "welder"
+		icon_state = initial(icon_state)
 		welding = 0
 
 
@@ -370,14 +370,29 @@
 	max_fuel = 40
 	m_amt = 70
 	g_amt = 60
+	icon_state = "indwelder"
 	origin_tech = "engineering=2"
+
+
+/obj/item/weapon/weldingtool/emergency
+	name = "emergency welding tool"
+	max_fuel = 10
+	m_amt = 30
+	g_amt = 10
+	icon_state = "miniwelder"
 
 /obj/item/weapon/weldingtool/largetank/cyborg
 
-/obj/item/weapon/weldingtool/largetank/cyborg/flamethrower_screwdriver()
+/obj/item/weapon/weldingtool/largetank/flamethrower_screwdriver()
 	return
 
-/obj/item/weapon/weldingtool/largetank/cyborg/flamethrower_rods()
+/obj/item/weapon/weldingtool/largetank/flamethrower_rods()
+	return
+
+/obj/item/weapon/weldingtool/emergency/flamethrower_screwdriver()
+	return
+
+/obj/item/weapon/weldingtool/emergency/flamethrower_rods()
 	return
 
 /obj/item/weapon/weldingtool/hugetank
@@ -419,15 +434,47 @@
 	icon_state = "crowbar"
 	flags = CONDUCT
 	slot_flags = SLOT_BELT
-	force = 5.0
+	force = 5
 	throwforce = 7.0
 	item_state = "crowbar"
 	w_class = 2.0
 	m_amt = 50
 	origin_tech = "engineering=1"
+	var/constructionsystem = 0
 	attack_verb = list("attacked", "bashed", "battered", "bludgeoned", "whacked")
 
 /obj/item/weapon/crowbar/red
 	icon = 'icons/obj/items.dmi'
 	icon_state = "red_crowbar"
 	item_state = "crowbar_red"
+	force = 8
+
+/obj/item/weapon/crowbar/tireiron
+	name = "tire iron"
+	desc = "A tire iron."
+	icon = 'icons/obj/weapons.dmi'
+	icon_state = "tireiron"
+	force = 14
+
+/obj/item/weapon/crowbar/attackby(obj/item/W as obj, mob/user as mob)
+	if(istype(W,/obj/item/stack/sheet/plasteel))
+		if(!istype(src, /obj/item/weapon/crowbar/tireiron))
+			if(constructionsystem == 0)
+				user << "You start to form a tire iron out of the crowbar using the plasteel."
+				var/obj/item/stack/sheet/plasteel/S = W
+				if(S.amount < 5)
+					user << "There's not enough material in this stack."
+					return
+				S.use(5)
+				icon_state = "tireiron"
+				constructionsystem = 1
+				return
+	else if(istype(W,/obj/item/weapon/weldingtool/))
+		if(constructionsystem == 1)
+			var/obj/item/weapon/weldingtool/T = W
+			if (T.remove_fuel(5, user))
+				playsound(user, 'sound/items/Welder2.ogg', 50, 1)
+				user << "You weld the plasteel in place to [src], finishing the tire iron."
+				new /obj/item/weapon/crowbar/tireiron(user.loc)
+				del(src)
+				return

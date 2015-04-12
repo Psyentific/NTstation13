@@ -12,7 +12,7 @@
 
 /turf/simulated/wall/r_wall/attackby(obj/item/W as obj, mob/user as mob)
 
-	if (!(istype(user, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
+	if (!user.IsAdvancedToolUser())
 		user << "<span class='warning'>You don't have the dexterity to do this!</span>"
 		return
 
@@ -28,7 +28,7 @@
 				thermitemelt(user)
 				return
 
-		else if(istype(W, /obj/item/weapon/pickaxe/plasmacutter))
+		else if(istype(W, /obj/item/weapon/gun/energy/plasmacutter))
 			thermitemelt(user)
 			return
 
@@ -76,15 +76,12 @@
 
 			//REPAIRING (replacing the outer grille for cosmetic damage)
 			else if( istype(W, /obj/item/stack/rods) )
-				var/obj/item/stack/O = W
+				var/obj/item/stack/rods/O = W
 				src.d_state = 0
 				src.icon_state = "r_wall"
 				relativewall_neighbours()	//call smoothwall stuff
 				user << "<span class='notice'>You replace the outer grille.</span>"
-				if (O.amount > 1)
-					O.amount--
-				else
-					qdel(O)
+				O.use(1)
 				return
 
 		if(2)
@@ -106,7 +103,7 @@
 					user << "<span class='notice'>You need more welding fuel to complete this task.</span>"
 				return
 
-			if( istype(W, /obj/item/weapon/pickaxe/plasmacutter) )
+			if( istype(W, /obj/item/weapon/gun/energy/plasmacutter) )
 
 				user << "<span class='notice'>You begin slicing through the metal cover.</span>"
 				playsound(src, 'sound/items/Welder.ogg', 100, 1)
@@ -170,7 +167,7 @@
 					user << "<span class='notice'>You need more welding fuel to complete this task.</span>"
 				return
 
-			if( istype(W, /obj/item/weapon/pickaxe/plasmacutter) )
+			if( istype(W, /obj/item/weapon/gun/energy/plasmacutter) )
 
 				user << "<span class='notice'>You begin slicing through the support rods.</span>"
 				playsound(src, 'sound/items/Welder.ogg', 100, 1)
@@ -227,39 +224,14 @@
 			src.icon_state = "r_wall"
 			relativewall_neighbours()	//call smoothwall stuff
 			user << "<span class='notice'>You repair the last of the damage.</span>"
-			if (MS.amount > 1)
-				MS.amount--
-			else
-				qdel(MS)
+			MS.use(1)
+
 
 	//APC
-	else if( istype(W,/obj/item/apc_frame) )
-		var/obj/item/apc_frame/AH = W
+	else if( istype(W,/obj/item/wall_frame) )
+		var/obj/item/wall_frame/AH = W
 		AH.try_build(src)
 
-	else if(istype(W,/obj/item/newscaster_frame))     //Be damned the man who thought only mobs need attack() and walls dont need inheritance, hitler incarnate
-		var/obj/item/newscaster_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if( istype(W,/obj/item/alarm_frame) )
-		var/obj/item/alarm_frame/AH = W
-		AH.try_build(src)
-
-	else if(istype(W,/obj/item/firealarm_frame))
-		var/obj/item/firealarm_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/light_fixture_frame))
-		var/obj/item/light_fixture_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/light_fixture_frame/small))
-		var/obj/item/light_fixture_frame/small/AH = W
-		AH.try_build(src)
-		return
 
 	//Poster stuff
 	else if(istype(W,/obj/item/weapon/contraband/poster))

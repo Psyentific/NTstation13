@@ -39,7 +39,7 @@
 //Boxes of ammo
 /obj/item/ammo_box
 	name = "ammo box (null_reference_exception)"
-	desc = "A box of ammo."
+	desc = "An ammo container."
 	icon_state = "357"
 	icon = 'icons/obj/ammo.dmi'
 	flags = CONDUCT
@@ -106,6 +106,13 @@
 		update_icon()
 		return num_loaded
 	return 0
+
+/obj/item/ammo_box/attack_self(mob/user as mob)
+	var/obj/item/ammo_casing/A = get_round()
+	if(A)
+		A.loc = user.loc
+		user << "<span class='notice'>You remove a shell from \the [src]!</span>"
+		update_icon()
 
 /obj/item/ammo_box/update_icon()
 	switch(multiple_sprites)

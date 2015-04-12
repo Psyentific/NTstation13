@@ -403,16 +403,16 @@ obj/machinery/hydroponics/proc/applyChemicals(var/datum/reagents/S)
 
 	// Requires 5 mutagen to possibly change species.// Poor man's mutagen.
 	if(S.has_reagent("mutagen", 5) || S.has_reagent("radium", 10) || S.has_reagent("uranium", 10))
-		switch(rand(100))
-			if(91 to 100)	plantdies()
-			if(81 to 90)	mutatespecie()
-			if(66 to 80)	hardmutate()
-			if(41 to 65)	mutate()
-			if(21 to 41)	usr << "The plants don't seem to react..."
-			if(11 to 20)	mutateweed()
-			if(1 to 10)		mutatepest()
-			else 			usr << "Nothing happens..."
-
+		switch(rand(100))										//old value --> new value
+			if(95 to 100)	plantdies()									//10% -->  6%
+			if(75 to 94)	mutatespecie()								//10% --> 20%
+			if(66 to 74)	hardmutate()								//15% -->  9%
+			if(52 to 65)	mutate()									//25% --> 14%
+			if(40 to 51)	usr << "The plants don't seem to react..."	//20% --> 12%
+			if(20 to 39)	mutateweed()								//10% --> 20%
+			if(00 to 19)	mutatepest()								//10% --> 20%
+//			else 			usr << "Nothing happens..."					// 1% -->  0%
+																		//101%--> 101%
 	// 2 or 1 units is enough to change the yield and other stats.// Can change the yield and other stats, but requires more than mutagen
 	else if(S.has_reagent("mutagen", 2) || S.has_reagent("radium", 5) || S.has_reagent("uranium", 5))
 		hardmutate()
@@ -768,9 +768,11 @@ obj/machinery/hydroponics/attackby(var/obj/item/O as obj, var/mob/user as mob)
 /obj/item/seeds/proc/harvest(mob/user = usr)
 	var/obj/machinery/hydroponics/parent = loc //for ease of access
 	var/t_amount = 0
+	var/list/result = list()
 
 	while(t_amount < getYield())
-		var/obj/item/weapon/reagent_containers/food/snacks/grown/t_prod = new product(user.loc, potency) // User gets a consumable
+		var/obj/item/weapon/reagent_containers/food/snacks/grown/t_prod = new product(user.loc, potency)
+		result.Add(t_prod) // User gets a consumable
 		if(!t_prod)	return
 		t_prod.seed = type
 		t_prod.lifespan = lifespan
@@ -783,6 +785,8 @@ obj/machinery/hydroponics/attackby(var/obj/item/O as obj, var/mob/user as mob)
 		t_amount++
 
 	parent.update_tray()
+
+	return result
 /*
 /obj/item/seeds/grassseed/harvest(mob/user = usr)
 	var/obj/machinery/hydroponics/parent = loc //for ease of access

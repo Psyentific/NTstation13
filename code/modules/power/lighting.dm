@@ -11,32 +11,24 @@
 
 
 
-/obj/item/light_fixture_frame
+/obj/item/wall_frame/light_fixture
 	name = "light fixture frame"
 	desc = "Used for building lights."
 	icon = 'icons/obj/lighting.dmi'
 	icon_state = "tube-construct-item"
-	flags = CONDUCT
 	var/fixture_type = "tube"
 	var/obj/machinery/light/newlight = null
 	var/sheets_refunded = 2
 
-/obj/item/light_fixture_frame/attackby(obj/item/weapon/W as obj, mob/user as mob)
+/obj/item/wall_frame/light_fixture/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if (istype(W, /obj/item/weapon/wrench))
 		new /obj/item/stack/sheet/metal( get_turf(src.loc), sheets_refunded )
 		qdel(src)
 		return
 	..()
 
-/obj/item/light_fixture_frame/proc/try_build(turf/on_wall)
-	if (get_dist(on_wall,usr)>1)
-		return
-	var/ndir = get_dir(usr,on_wall)
-	if (!(ndir in cardinal))
-		return
-	var/turf/loc = get_turf(usr)
-	if (!istype(loc, /turf/simulated/floor))
-		usr << "\red [src.name] cannot be placed on this spot."
+/obj/item/wall_frame/light_fixture/try_build(turf/on_wall)
+	if(!..())
 		return
 	usr << "Attaching [src] to the wall."
 	playsound(src.loc, 'sound/machines/click.ogg', 75, 1)
@@ -58,12 +50,10 @@
 		"You attach [src] to the wall.")
 	qdel(src)
 
-/obj/item/light_fixture_frame/small
+/obj/item/wall_frame/light_fixture/small
 	name = "small light fixture frame"
 	desc = "Used for building small lights."
-	icon = 'icons/obj/lighting.dmi'
 	icon_state = "bulb-construct-item"
-	flags = CONDUCT
 	fixture_type = "bulb"
 	sheets_refunded = 1
 
@@ -490,9 +480,9 @@
 		else
 			prot = 1
 
-		if(prot > 0 || (COLD_RESISTANCE in user.mutations))
+		if(prot > 0 || user.has_organic_effect(/datum/organic_effect/cold_res))
 			user << "You remove the light [fitting]"
-		else if(TK in user.mutations)
+		else if(user.has_organic_effect(/datum/organic_effect/tk))
 			user << "You telekinetically remove the light [fitting]."
 		else
 			user << "You try to remove the light [fitting], but you burn your hand on it!"
@@ -650,11 +640,6 @@
 	g_amt = 100
 	brightness = 8
 
-/obj/item/weapon/light/tube/large
-	w_class = 2
-	name = "large light tube"
-	brightness = 15
-
 /obj/item/weapon/light/bulb
 	name = "light bulb"
 	desc = "A replacement light bulb."
@@ -662,20 +647,11 @@
 	base_state = "lbulb"
 	item_state = "contvapour"
 	g_amt = 100
-	brightness = 5
+	brightness = 4
 
 /obj/item/weapon/light/throw_impact(atom/hit_atom)
 	..()
 	shatter()
-
-/obj/item/weapon/light/bulb/fire
-	name = "fire bulb"
-	desc = "A replacement fire bulb."
-	icon_state = "fbulb"
-	base_state = "fbulb"
-	item_state = "egg4"
-	g_amt = 100
-	brightness = 5
 
 // update the icon state and description of the light
 
@@ -694,11 +670,6 @@
 
 /obj/item/weapon/light/New()
 	..()
-	switch(name)
-		if("light tube")
-			brightness = rand(6,9)
-		if("light bulb")
-			brightness = rand(4,6)
 	update()
 
 

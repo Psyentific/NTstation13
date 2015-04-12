@@ -95,24 +95,10 @@
 	if(shielded)
 		damage /= 4
 
-
 	show_message("\red The blob attacks!")
-
 	adjustFireLoss(damage)
-
 	return
 
-
-/mob/living/carbon/alien/humanoid/meteorhit(O as obj)
-	for(var/mob/M in viewers(src, null))
-		if ((M.client && !( M.blinded )))
-			M.show_message(text("\red [] has been hit by []", src, O), 1)
-	if (health > 0)
-		adjustFireLoss((istype(O, /obj/effect/meteor/small) ? 10 : 25))
-		adjustFireLoss(30)
-
-		updatehealth()
-	return
 
 /mob/living/carbon/alien/humanoid/attack_paw(mob/living/carbon/monkey/M as mob)
 	if(!ismonkey(M))	return//Fix for aliens receiving double messages when attacking other aliens.
@@ -251,7 +237,7 @@
 		if ("harm")
 			var/damage = rand(1, 9)
 			if (prob(90))
-				if (HULK in M.mutations)//HULK SMASH
+				if (M.has_organic_effect(/datum/organic_effect/hulk))//HULK SMASH
 					damage += 14
 					spawn(0)
 						Weaken(damage) // Why can a hulk knock an alien out but not knock out a human? Damage is robust enough.

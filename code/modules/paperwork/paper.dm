@@ -69,7 +69,7 @@
 	set category = "Object"
 	set src in usr
 
-	if((CLUMSY in usr.mutations) && prob(25))
+	if(usr.has_organic_effect(/datum/organic_effect/clumsy) && prob(25))
 		usr << "<span class='warning'>You cut yourself on the paper! Ahhhh! Ahhhhh!</span>"
 		usr.damageoverlaytemp = 9001
 		return
@@ -252,7 +252,7 @@
 			return
 
 		t = parsepencode(t, i, usr, iscrayon) // Encode everything from pencode to html
-		
+
 		if(t != null)	//No input from the user means nothing needs to be added
 			if(id!="end")
 				addtofield(text2num(id), t) // He wants to edit a field, let him.
@@ -271,7 +271,7 @@
 		return
 
 	var/clown = 0
-	if(user && (CLUMSY in user.mutations))
+	if(user && user.has_organic_effect(/datum/organic_effect/clumsy))
 		clown = 1
 
 	if(istype(P, /obj/item/weapon/pen) || istype(P, /obj/item/toy/crayon))
@@ -341,6 +341,10 @@
 	name = "paper- 'Official Bulletin'"
 	info = "<BR>Centcom Security<BR>Port Division<BR>Official Bulletin<BR><BR>Inspector,<BR>There is an emergency shuttle arriving today.<BR><BR>Approval is restricted to Nanotrasen employees only. Deny all other entrants.<BR><BR>Centcom Port Commissioner"
 
+/obj/item/weapon/paper/range
+	name = "paper- Firing Range Instructions"
+	info = "Directions:<br><i>First you'll want to make sure there is a target stake in the center of the magnetic platform. Next, take an aluminum target from the crates back there and slip it into the stake. Make sure it clicks! Next, there should be a control console mounted on the wall somewhere in the room.<br><br> This control console dictates the behaviors of the magnetic platform, which can move your firing target around to simulate real-world combat situations. From here, you can turn off the magnets or adjust their electromagnetic levels and magnetic fields. The electricity level dictates the strength of the pull - you will usually want this to be the same value as the speed. The magnetic field level dictates how far the magnetic pull reaches.<br><br>Speed and path are the next two settings. Speed is associated with how fast the machine loops through the designated path. Paths dictate where the magnetic field will be centered at what times. There should be a pre-fabricated path input already. You can enable moving to observe how the path affects the way the stake moves. To script your own path, look at the following key:</i><br><br>N: North<br>S: South<br>E: East<br>W: West<br>C: Center<br>R: Random (results may vary)<br>; or &: separators. They are not necessary but can make the path string better visible."
+
 /obj/item/weapon/paper/crumpled
 	name = "paper scrap"
 	icon_state = "scrap"
@@ -351,3 +355,4 @@
 
 /obj/item/weapon/paper/crumpled/bloody
 	icon_state = "scrap_bloodied"
+

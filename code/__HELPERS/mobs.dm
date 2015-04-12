@@ -24,6 +24,12 @@
 		if(FEMALE)	return pick(undershirt_f)
 		else		return pick(undershirt_list)
 
+/proc/random_socks(gender)
+	switch(gender)
+		if(MALE)	return pick(socks_m)
+		if(FEMALE)	return pick(socks_f)
+		else		return pick(socks_list)
+
 proc/random_hair_style(gender)
 	switch(gender)
 		if(MALE)	return pick(hair_styles_male_list)
@@ -60,6 +66,11 @@ var/list/skin_tones = list(
 	"indian",
 	"african1",
 	"african2"
+	)
+
+var/list/mutant_races = list(
+	"human",
+	"lizard",
 	)
 
 proc/age2agedescription(age)

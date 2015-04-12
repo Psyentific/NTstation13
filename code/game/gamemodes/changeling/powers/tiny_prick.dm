@@ -42,9 +42,15 @@
 		return //sanity check as AStar is still throwing insane stunts
 	if(!AStar(user.loc, target.loc, /turf/proc/AdjacentTurfs, /turf/proc/Distance, user.mind.changeling.sting_range))
 		return //hope this ancient magic still works
+	if(target.mind && target.mind.changeling)
+		sting_feedback(user,target)
+		take_chemical_cost(user.mind.changeling)
+		return
 	return 1
 
 /obj/effect/proc_holder/changeling/sting/sting_feedback(var/mob/user, var/mob/target)
+	if(!target)
+		return
 	user << "<span class='notice'>We stealthily sting [target.name].</span>"
 	if(target.mind && target.mind.changeling)
 		target << "<span class='warning'>You feel a tiny prick.</span>"
@@ -72,7 +78,7 @@
 /obj/effect/proc_holder/changeling/sting/transformation/can_sting(var/mob/user, var/mob/target)
 	if(!..())
 		return
-	if((HUSK in target.mutations) || !check_dna_integrity(target))
+	if(target.has_organic_effect(/datum/organic_effect/husk) || !check_dna_integrity(target))
 		user << "<span class='warning'>Our sting appears ineffective against its DNA.</span>"
 		return 0
 	return 1
@@ -80,6 +86,8 @@
 /obj/effect/proc_holder/changeling/sting/transformation/sting_action(var/mob/user, var/mob/target)
 	add_logs(user, target, "stung", object="transformation sting", addition=" new identity is [selected_dna.real_name]")
 	var/datum/dna/NewDNA = selected_dna
+	if(ismonkey(target))
+		user << "<span class='notice'>We stealthily sting [target.name].</span>"
 	hardset_dna(target, NewDNA.uni_identity, NewDNA.struc_enzymes, NewDNA.real_name, NewDNA.mutantrace, NewDNA.blood_type)
 	updateappearance(target)
 	feedback_add_details("changeling_powers","TS")
@@ -95,7 +103,7 @@ obj/effect/proc_holder/changeling/sting/extract_dna
 
 /obj/effect/proc_holder/changeling/sting/extract_dna/can_sting(var/mob/user, var/mob/target)
 	if(..())
-		return user.mind.changeling.can_absorb_dna(user, target)
+		return user.mind.changeling.can_extract_sting(user, target)
 
 /obj/effect/proc_holder/changeling/sting/extract_dna/sting_action(var/mob/user, var/mob/target)
 	add_logs(user, target, "stung", object="extraction sting")
@@ -146,7 +154,7 @@ obj/effect/proc_holder/changeling/sting/LSD
 	add_logs(user, target, "stung", object="LSD sting")
 	spawn(rand(300,600))
 		if(target)
-			target.hallucination += 400
+			target.hallucination = max(400, target.hallucination)
 	feedback_add_details("changeling_powers","HS")
 	return 1
 

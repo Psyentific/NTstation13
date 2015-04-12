@@ -27,6 +27,7 @@
 		explosion_resistance = 0
 	update_freelook_sight()
 	air_update_turf(1)
+	portals += src
 	return
 
 
@@ -34,6 +35,7 @@
 	density = 0
 	air_update_turf(1)
 	update_freelook_sight()
+	portals -= src
 	..()
 	return
 
@@ -81,6 +83,11 @@
 /obj/machinery/door/CanAtmosPass()
 	return !density
 
+//used in the AStar algorithm to determinate if the turf the door is on is passable
+/obj/machinery/door/proc/CanAStarPass(var/obj/item/weapon/card/id/ID)
+	return !density || check_access(ID)
+
+
 /obj/machinery/door/proc/bumpopen(mob/user as mob)
 	if(operating)	return
 	src.add_fingerprint(user)
@@ -90,10 +97,6 @@
 	if(density && !emagged)
 		if(allowed(user) || src.emergency == 1)	open()
 		else				flick("door_deny", src)
-	return
-
-/obj/machinery/door/meteorhit(obj/M as obj)
-	src.open()
 	return
 
 

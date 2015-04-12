@@ -171,7 +171,7 @@
 	set category = "Malfunction"
 	set name = "System Override"
 	set desc = "Start the victory timer"
-	if (!game_is_malf_mode(ticker.mode))
+	if (!gamemode_is("AI malfunction"))
 		usr << "You cannot begin a takeover in this round type!."
 		return
 
@@ -187,7 +187,7 @@
 	if (alert(usr, "Are you sure you wish to initiate the takeover? The station hostile runtime detection software is bound to alert everyone. You have hacked [ticker.mode:apcs] APCs.", "Takeover:", "Yes", "No") != "Yes")
 		return
 
-	command_alert("Hostile runtimes detected in all station systems, please deactivate your AI to prevent possible damage to its morality core.", "Anomaly Alert")
+	priority_announce("Hostile runtimes detected in all station systems, please deactivate your AI to prevent possible damage to its morality core.", "Anomaly Alert", 'sound/AI/aimalf.ogg')
 	set_security_level("delta")
 
 	for(var/obj/item/weapon/pinpointer/point in world)
@@ -199,9 +199,6 @@
 	Malf.malf_mode_declared = 1
 	for(var/datum/mind/AI_mind in Malf.malf_ai)
 		AI_mind.current.verbs -= /datum/game_mode/malfunction/proc/takeover
-	for(var/mob/M in player_list)
-		if(!istype(M,/mob/new_player))
-			M << sound('sound/AI/aimalf.ogg')
 
 
 /datum/game_mode/malfunction/proc/ai_win()
@@ -209,7 +206,7 @@
 	set name = "Explode"
 	set desc = "Station go boom"
 
-	if(!game_is_malf_mode(ticker.mode))
+	if(!gamemode_is("AI malfunction"))
 		return
 
 	var/datum/game_mode/malfunction/Malf = ticker.mode
@@ -279,7 +276,7 @@
 
 
 /datum/game_mode/proc/auto_declare_completion_malfunction()
-	if( malf_ai.len || game_is_malf_mode(ticker.mode) )
+	if( malf_ai.len || gamemode_is("AI malfunction") )
 		var/text = "<br><FONT size=3><B>The malfunctioning AI were:</B></FONT>"
 
 		for(var/datum/mind/malf in malf_ai)

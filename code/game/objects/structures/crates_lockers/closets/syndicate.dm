@@ -16,6 +16,7 @@
 	new /obj/item/clothing/under/syndicate(src)
 	new /obj/item/weapon/storage/belt/military(src)
 	new /obj/item/weapon/crowbar/red(src)
+	new /obj/item/weapon/card/id/syndicate(src)
 
 
 /obj/structure/closet/syndicate/nuclear
@@ -31,11 +32,12 @@
 	new /obj/item/ammo_box/magazine/m10mm(src)
 	new /obj/item/weapon/storage/box/flashbangs(src)
 	new /obj/item/weapon/storage/box/teargas(src)
-	new /obj/item/weapon/gun/energy/gun(src)
-	new /obj/item/weapon/gun/energy/gun(src)
-	new /obj/item/weapon/gun/energy/gun(src)
-	new /obj/item/weapon/gun/energy/gun(src)
-	new /obj/item/weapon/gun/energy/gun(src)
+	new /obj/item/weapon/storage/box/incendiary(src)
+	new /obj/item/weapon/gun/projectile/automatic/bulldog(src)
+	new /obj/item/weapon/gun/projectile/automatic/bulldog(src)
+	new /obj/item/weapon/gun/projectile/automatic/bulldog(src)
+	new /obj/item/weapon/gun/projectile/automatic/bulldog(src)
+	new /obj/item/weapon/gun/projectile/automatic/bulldog(src)
 	new /obj/item/weapon/pinpointer/nukeop(src)
 	new /obj/item/weapon/pinpointer/nukeop(src)
 	new /obj/item/weapon/pinpointer/nukeop(src)
@@ -62,7 +64,7 @@
 		//Sad trombone
 		if(pickednum == 1)
 			var/obj/item/weapon/paper/P = new /obj/item/weapon/paper(src)
-			P.name = "IOU"
+			P.name = "\improper IOU"
 			P.info = "Sorry man, we needed the money so we sold your stash. It's ok, we'll double our money for sure this time!"
 
 		//Metal (common ore)

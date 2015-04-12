@@ -56,6 +56,7 @@
 		sleep(1)
 		new /obj/item/clothing/mask/breath( src )
 		new /obj/item/weapon/tank/emergency_oxygen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
 		return
 
 /obj/item/weapon/storage/box/engineer
@@ -65,6 +66,7 @@
 		sleep(1)
 		new /obj/item/clothing/mask/breath( src )
 		new /obj/item/weapon/tank/emergency_oxygen/engi( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
 		return
 
 /obj/item/weapon/storage/box/gloves
@@ -103,7 +105,7 @@
 /obj/item/weapon/storage/box/syringes
 	name = "box of syringes"
 	desc = "A box full of syringes."
-	desc = "A biohazard alert warning is printed on the box"
+	desc = "A biohazard alert warning is printed on the box."
 	icon_state = "syringe"
 
 	New()
@@ -115,6 +117,21 @@
 		new /obj/item/weapon/reagent_containers/syringe( src )
 		new /obj/item/weapon/reagent_containers/syringe( src )
 		new /obj/item/weapon/reagent_containers/syringe( src )
+
+/obj/item/weapon/storage/box/medipens
+	name = "box of MediPens"
+	desc = "A box full of MediPens"
+	icon_state = "syringe"
+
+	New()
+		..()
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
+		new /obj/item/weapon/reagent_containers/hypospray/medipen( src )
 
 /obj/item/weapon/storage/box/beakers
 	name = "box of beakers"
@@ -200,6 +217,22 @@
 		new /obj/item/weapon/grenade/chem_grenade/teargas(src)
 		new /obj/item/weapon/grenade/chem_grenade/teargas(src)
 		new /obj/item/weapon/grenade/chem_grenade/teargas(src)
+
+/obj/item/weapon/storage/box/incendiary
+	name = "box of incendiary grenades (WARNING)"
+	desc = "<B>WARNING: Do not use without fire resistant clothing and internals.</B>"
+	icon_state = "incendiary"
+
+	New()
+		..()
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+		new /obj/item/weapon/grenade/chem_grenade/incendiary(src)
+
 
 /obj/item/weapon/storage/box/emps
 	name = "box of emp grenades"
@@ -442,7 +475,7 @@
 	icon = 'icons/obj/toy.dmi'
 	icon_state = "spbox"
 	storage_slots = 8
-	can_hold = list("/obj/item/toy/snappop")
+	can_hold = list(/obj/item/toy/snappop)
 	New()
 		..()
 		for(var/i=1; i <= storage_slots; i++)
@@ -514,3 +547,53 @@
 		new /obj/item/weapon/light/tube(src)
 	for(var/i = 0; i < 7; i++)
 		new /obj/item/weapon/light/bulb(src)
+
+/obj/item/weapon/storage/box/foamdart
+	name = "box of foam darts"
+	desc = "A box of \"Foam Force\" brand foam darts. Ages 8 and up"
+	icon_state = "foamdarts"
+	storage_slots=14
+	New()
+		..()
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+
+/obj/item/weapon/storage/box/foamcrossbow
+	name = "foam dart crossbow box"
+	desc = "A \"Foam Force\" brand foam dart crossbow in a box. Ages 8 and up"
+	icon_state = "foamcrossbow"
+	New()
+		..()
+		new /obj/item/toy/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+
+/obj/item/weapon/storage/box/foamshotgun
+	name = "foam dart shotgun box"
+	desc = "A \"Foam Force\" brand foam dart shotgun in a box. Ages 8 and up"
+	icon_state = "foamshotgun"
+	New()
+		..()
+		new /obj/item/toy/crossbow/shotgun( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )
+		new /obj/item/toy/ammo/crossbow( src )

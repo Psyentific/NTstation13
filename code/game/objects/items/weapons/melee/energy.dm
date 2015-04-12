@@ -2,8 +2,8 @@
 	var/active = 0
 
 /obj/item/weapon/melee/energy/suicide_act(mob/user)
-	viewers(user) << pick("<span class='suicide'>[user] is slitting \his stomach open with the [src.name]! It looks like \he's trying to commit seppuku.</span>", \
-						"<span class='suicide'>[user] is falling on the [src.name]! It looks like \he's trying to commit suicide.</span>")
+	user.visible_message(pick("<span class='suicide'>[user] is slitting \his stomach open with the [src.name]! It looks like \he's trying to commit seppuku.</span>", \
+						"<span class='suicide'>[user] is falling on the [src.name]! It looks like \he's trying to commit suicide.</span>"))
 	return (BRUTELOSS|FIRELOSS)
 
 /obj/item/weapon/melee/energy/rejects_blood()
@@ -19,12 +19,12 @@
 	throw_speed = 3
 	throw_range = 5
 	w_class = 3.0
-	flags = CONDUCT | NOSHIELD
+	flags = CONDUCT | NOSHIELD | SHARP
 	origin_tech = "combat=3"
 	attack_verb = list("attacked", "chopped", "cleaved", "torn", "cut")
 
 /obj/item/weapon/melee/energy/axe/suicide_act(mob/user)
-		viewers(user) << "<span class='suicide'>[user] swings the [src.name] towards /his head! It looks like \he's trying to commit suicide.</span>"
+		user.visible_message("<span class='suicide'>[user] swings the [src.name] towards /his head! It looks like \he's trying to commit suicide.</span>")
 		return (BRUTELOSS|FIRELOSS)
 
 /obj/item/weapon/melee/energy/axe/attack_self(mob/user)
@@ -54,9 +54,10 @@
 	throw_speed = 3
 	throw_range = 5
 	w_class = 2.0
-	flags = NOSHIELD
+	flags = NOSHIELD | SHARP
 	origin_tech = "magnets=3;syndicate=4"
 	var/hacked = 0
+	var/f_lum = 1
 
 /obj/item/weapon/melee/energy/sword/New()
 	item_color = pick("red", "blue", "green", "purple")
@@ -66,8 +67,18 @@
 		return 1
 	return 0
 
+/obj/item/weapon/melee/energy/sword/pickup(mob/user)
+	if(active)
+		SetLuminosity(0)
+		user.AddLuminosity(f_lum)
+
+/obj/item/weapon/melee/energy/sword/dropped(mob/user)
+	if(active)
+		user.AddLuminosity(-f_lum)
+		SetLuminosity(f_lum)
+
 /obj/item/weapon/melee/energy/sword/attack_self(mob/living/user)
-	if ((CLUMSY in user.mutations) && prob(50))
+	if (user.has_organic_effect(/datum/organic_effect/clumsy) && prob(50))
 		user << "<span class='warning'>You accidentally cut yourself with [src], like a doofus!</span>"
 		user.take_organ_damage(5,5)
 	active = !active
@@ -76,6 +87,10 @@
 		throwforce = 20
 		hitsound = 'sound/weapons/blade1.ogg'
 		attack_verb = list("attacked", "slashed", "stabbed", "sliced", "torn", "ripped", "diced", "cut")
+		if(src in user.contents)
+			user.AddLuminosity(f_lum)
+		else
+			SetLuminosity(f_lum)
 		if(istype(src,/obj/item/weapon/melee/energy/sword/pirate))
 			icon_state = "cutlass1"
 		else
@@ -88,6 +103,10 @@
 		throwforce = 5.0
 		hitsound = "swing_hit"
 		attack_verb = null
+		if(src in user.contents)
+			user.AddLuminosity(-f_lum)
+		else
+			SetLuminosity(0)
 		if(istype(src,/obj/item/weapon/melee/energy/sword/pirate))
 			icon_state = "cutlass0"
 		else
@@ -111,6 +130,10 @@
 			if(src.hacked) // That's right, we'll only check the "original" esword.
 				newSaber.hacked = 1
 				newSaber.item_color = "rainbow"
+			else
+				newSaber.item_color = item_color
+			if(active)
+				user.AddLuminosity(-f_lum)
 			user.unEquip(W)
 			user.unEquip(src)
 			qdel(W)
@@ -163,7 +186,7 @@
 	throw_speed = 3
 	throw_range = 1
 	w_class = 4.0//So you can't hide it in your pocket or some such.
-	flags = NOSHIELD
+	flags = NOSHIELD | SHARP
 	attack_verb = list("attacked", "slashed", "stabbed", "sliced", "torn", "ripped", "diced", "cut")
 	var/datum/effect/effect/system/spark_spread/spark_system
 

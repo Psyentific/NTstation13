@@ -470,6 +470,8 @@ var/global/floorIsLava = 0
 			<A href='?src=\ref[src];secretsfun=traitor_all'>Everyone is the traitor</A><BR>
 			<A href='?src=\ref[src];secretsfun=guns'>Summon Guns</A><BR>
 			<A href='?src=\ref[src];secretsfun=magic'>Summon Magic</A><BR>
+			<A href='?src=\ref[src];secretsfun=mechs'>Summon Mechs</A><BR>
+			<A href='?src=\ref[src];secretsfun=melee'>Summon Melee</A><BR>
 			<A href='?src=\ref[src];secretsfun=onlyone'>There can only be one!</A><BR>
 			<A href='?src=\ref[src];secretsfun=retardify'>Make all players retarded</A><BR>
 			<A href='?src=\ref[src];secretsfun=eagles'>Egalitarian Station Mode</A><BR>
@@ -569,11 +571,7 @@ var/global/floorIsLava = 0
 	set category = "Server"
 	set desc="Toggle dis bitch"
 	set name="Toggle OOC"
-	ooc_allowed = !( ooc_allowed )
-	if (ooc_allowed)
-		world << "<B>The OOC channel has been globally enabled!</B>"
-	else
-		world << "<B>The OOC channel has been globally disabled!</B>"
+	toggle_ooc()
 	log_admin("[key_name(usr)] toggled OOC.")
 	message_admins("[key_name_admin(usr)] toggled OOC.", 1)
 	feedback_add_details("admin_verb","TOOC") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!

@@ -121,7 +121,7 @@
 /mob/living/carbon/alien/proc/handle_mutations_and_radiation()
 
 	if(getFireLoss())
-		if((COLD_RESISTANCE in mutations) || prob(5))
+		if(has_organic_effect(/datum/organic_effect/cold_res) || prob(5))
 			adjustFireLoss(-1)
 
 	// Aliens love radiation nom nom nom
@@ -147,6 +147,10 @@
 			if(75 to 100)
 				radiation -= 3
 				adjustToxLoss(3)
+
+	if(organic_effects.len)
+		for(var/datum/organic_effect/OE in organic_effects)
+			OE.trigger()
 
 /mob/living/carbon/alien/handle_fire()//Aliens on fire code
 	if(..())
@@ -212,6 +216,9 @@ Des: Removes all infected images from the alien.
 			if(dd_hasprefix_case(I.icon_state, "infected"))
 				qdel(I)
 	return
+
+/mob/living/carbon/alien/canBeHandcuffed()
+	return 1
 
 #undef HEAT_DAMAGE_LEVEL_1
 #undef HEAT_DAMAGE_LEVEL_2

@@ -45,7 +45,7 @@
 /mob/living/proc/burn_skin(burn_amount)
 	if(istype(src, /mob/living/carbon/human))
 		//world << "DEBUG: burn_skin(), mutations=[mutations]"
-		if (COLD_RESISTANCE in src.mutations) //fireproof
+		if (has_organic_effect(/datum/organic_effect/cold_res)) //fireproof
 			return 0
 		var/mob/living/carbon/human/H = src	//make this damage method divide the damage to be done among all the body parts, then burn each body part for that much damage. will have better effect then just randomly picking a body part
 		var/divided_damage = (burn_amount)/(H.organs.len)
@@ -57,7 +57,7 @@
 		H.updatehealth()
 		return 1
 	else if(istype(src, /mob/living/carbon/monkey))
-		if (COLD_RESISTANCE in src.mutations) //fireproof
+		if (has_organic_effect(/datum/organic_effect/cold_res)) //fireproof
 			return 0
 		var/mob/living/carbon/monkey/M = src
 		M.adjustFireLoss(burn_amount)
@@ -279,7 +279,6 @@
 	ExtinguishMob()
 	fire_stacks = 0
 	suiciding = 0
-	buckled = initial(src.buckled)
 	if(iscarbon(src))
 		var/mob/living/carbon/C = src
 		C.handcuffed = initial(C.handcuffed)
@@ -499,7 +498,7 @@
 		if(CM.handcuffed && CM.canmove && (CM.last_special <= world.time))
 			CM.changeNext_move(100)
 			CM.last_special = world.time + 100
-			if(isalienadult(CM) || (HULK in usr.mutations))//Don't want to do a lot of logic gating here.
+			if(isalienadult(CM) || usr.has_organic_effect(/datum/organic_effect/hulk))//Don't want to do a lot of logic gating here.
 				CM.visible_message("<span class='warning'>[CM] is trying to break [CM.handcuffed]!</span>", \
 							"<span class='notice'>You attempt to break [CM.handcuffed]. (This will take around 5 seconds and you need to stand still.)</span>")
 				spawn(0)
@@ -533,7 +532,7 @@
 		else if(CM.legcuffed && CM.canmove && (CM.last_special <= world.time))
 			CM.changeNext_move(100)
 			CM.last_special = world.time + 100
-			if(isalienadult(CM) || (HULK in usr.mutations))//Don't want to do a lot of logic gating here.
+			if(isalienadult(CM) || usr.has_organic_effect(/datum/organic_effect/hulk))//Don't want to do a lot of logic gating here.
 				CM.visible_message("<span class='warning'>[CM] is trying to break [CM.legcuffed]!</span>", \
 						"<span class='notice'>You attempt to break [CM.legcuffed]. (This will take around 5 seconds and you need to stand still.)</span>")
 				spawn(0)
@@ -581,3 +580,44 @@
 /mob/living/proc/Exhaust()
 	src << "<span class='notice'>You're too exhausted to keep going...</span>"
 	Weaken(5)
+
+/mob/living/update_gravity(has_gravity)
+	if(!ticker)
+		return
+	float(!has_gravity)
+
+/mob/living/proc/float(on)
+	if(on && !floating)
+		animate(src, pixel_y = 2, time = 10, loop = -1)
+		floating = 1
+	else if(!on && floating)
+		animate(src, pixel_y = initial(pixel_y), time = 10)
+		floating = 0
+
+// The src mob is trying to strip an item from someone
+// Override if a certain type of mob should be behave differently when stripping items (can't, for example)
+/mob/living/stripPanelUnequip(mob/who, obj/item/what, where)
+	if(what.flags & NODROP)
+		src << "<span class='notice'>You can't remove \the [what.name], it appears to be stuck!</span>"
+		return
+	visible_message("<span class='danger'>[src] tries to remove [who]'s [what.name].</span>", \
+					"<span class='userdanger'>[src] tries to remove [who]'s [what.name].</span>")
+	what.add_fingerprint(src)
+	if(do_mob(src, who, STRIP_DELAY))
+		if(what && Adjacent(who))
+			who.unEquip(what)
+
+// The src mob is trying to place an item on someone
+// Override if a certain mob should be behave differently when placing items (can't, for example)
+/mob/living/stripPanelEquip(mob/who, obj/item/what, where)
+	what = src.get_active_hand()
+	if(what && (what.flags & NODROP))
+		src << "<span class='notice'>You can't put \the [what.name] on [who], it's stuck to your hand!</span>"
+		return
+	if(what && what.mob_can_equip(who, where, 1))
+		visible_message("<span class='notice'>[src] tries to put [what] on [who].</span>")
+		if(do_mob(src, who, STRIP_DELAY * 0.5))
+			if(what && Adjacent(who))
+				src.unEquip(what)
+				who.equip_to_slot_if_possible(what, where, 0, 1)
+

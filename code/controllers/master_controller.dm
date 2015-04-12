@@ -17,6 +17,11 @@ datum/controller/game_controller
 	var/minimum_ticks = 20		//The minimum length of time between MC ticks
 
 	var/air_cost 		= 0
+	var/air_turfs		= 0
+	var/air_groups		= 0
+	var/air_highpressure= 0
+	var/air_hotspots	= 0
+	var/air_superconductivity = 0
 	var/sun_cost		= 0
 	var/mobs_cost		= 0
 	var/diseases_cost	= 0
@@ -71,6 +76,8 @@ datum/controller/game_controller/proc/setup()
 	setupgenetics()
 	setupfactions()
 
+	transfer_controller = new
+
 	spawn(0)
 		if(ticker)
 			ticker.pregame()
@@ -122,6 +129,7 @@ datum/controller/game_controller/proc/process()
 				controller_iteration++
 
 				vote.process()
+				transfer_controller.process()
 
 				//AIR
 				if(!air_processing_killed)

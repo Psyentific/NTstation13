@@ -64,6 +64,9 @@
 	var/scan_ready = 1
 	var/species //Sorry, no spider+corgi buttbabies.
 
+	//simple_animal access
+	var/obj/item/weapon/card/id/access_card = null	//innate access uses an internal ID card
+
 /mob/living/simple_animal/New()
 	..()
 	verbs -= /mob/verb/observe
@@ -359,8 +362,8 @@
 			visible_message("\red <B>[L] bites [src]!</B>")
 
 			if(stat != DEAD)
-				adjustBruteLoss(damage)
 				L.amount_grown = min(L.amount_grown + damage, L.max_grown)
+				adjustBruteLoss(damage)
 
 
 /mob/living/simple_animal/attack_slime(mob/living/carbon/slime/M as mob)

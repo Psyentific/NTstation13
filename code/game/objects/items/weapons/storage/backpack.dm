@@ -52,8 +52,8 @@
 			qdel(W)
 			var/obj/machinery/singularity/singulo = new /obj/machinery/singularity (get_turf(src))
 			singulo.energy = 300 //should make it a bit bigger~
-			message_admins("[key_name_admin(user)] detonated a bag of holding")
-			log_game("[key_name(user)] detonated a bag of holding")
+			message_admins("[key_name_admin(user)] detonated a [src.name].")
+			log_game("[key_name(user)] detonated a [src.name].")
 			qdel(src)
 			return
 		..()
@@ -69,6 +69,13 @@
 			crit_fail = 1
 			icon_state = "brokenpack"
 
+/obj/item/weapon/storage/backpack/holding/belt //It is here instead of belts so it works with all the BoH code.
+	name = "belt of holding"
+	desc = "An experimental belt that opens into a small, localized pocket of Blue Space."
+	icon_state = "holdingbelt"
+	item_state = "holdingbelt"
+	max_w_class = 3 //It is a backpack for your belt!
+	slot_flags = SLOT_BELT
 
 /obj/item/weapon/storage/backpack/santabag
 	name = "Santa's Gift Bag"
@@ -144,7 +151,7 @@
 	icon_state = "satchel-norm"
 
 /obj/item/weapon/storage/backpack/satchel_eng
-	name = "industrial satchel"
+	name = "engineering satchel"
 	desc = "A tough satchel with extra pockets."
 	icon_state = "satchel-eng"
 	item_state = "engiepack"
@@ -175,15 +182,20 @@
 	desc = "Useful for holding research materials."
 	icon_state = "satchel-tox"
 
+/obj/item/weapon/storage/backpack/satchel_robo
+	name = "roboticist satchel"
+	desc = "A satchel made with static-free materials for roboticists."
+	icon_state = "satchel-robo"
+
 /obj/item/weapon/storage/backpack/satchel_sec
 	name = "security satchel"
-	desc = "A robust satchel for security related needs."
+	desc = "A robust satchel used by security staff."
 	icon_state = "satchel-sec"
 	item_state = "securitypack"
 
 /obj/item/weapon/storage/backpack/satchel_hyd
 	name = "hydroponics satchel"
-	desc = "A green satchel for plant related work."
+	desc = "A completely biodegradable satchel used by avid botanists."
 	icon_state = "satchel_hyd"
 
 /obj/item/weapon/storage/backpack/satchel_cap

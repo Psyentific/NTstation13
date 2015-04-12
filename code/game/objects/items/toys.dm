@@ -1,5 +1,5 @@
 /* Toys!
- * ContainsL
+ * Contains:
  *		Balloons
  *		Fake telebeacon
  *		Fake singularity
@@ -15,6 +15,7 @@
 
 
 /obj/item/toy
+	icon = 'icons/obj/toy.dmi'
 	throwforce = 0
 	throw_speed = 3
 	throw_range = 7
@@ -27,7 +28,6 @@
 /obj/item/toy/balloon
 	name = "water balloon"
 	desc = "A translucent balloon. There's nothing in it."
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "waterballoon-e"
 	item_state = "balloon-empty"
 
@@ -110,8 +110,7 @@
 /obj/item/toy/gun
 	name = "cap gun"
 	desc = "There are 0 caps left. Looks almost like the real thing! Ages 8 and up. Please recycle in an autolathe when you're out of caps!"
-	icon = 'icons/obj/gun.dmi'
-	icon_state = "revolver"
+	icon_state = "capgun"
 	item_state = "gun"
 	flags =  CONDUCT
 	slot_flags = SLOT_BELT
@@ -121,48 +120,48 @@
 	attack_verb = list("struck", "pistol whipped", "hit", "bashed")
 	var/bullets = 7.0
 
-	examine()
-		set src in usr
+/obj/item/toy/gun/examine()
+	set src in usr
 
-		src.desc = text("There are [] cap\s left. Looks almost like the real thing! Ages 8 and up.", src.bullets)
-		..()
-		return
+	src.desc = text("There are [] cap\s left. Looks almost like the real thing! Ages 8 and up.", src.bullets)
+	..()
+	return
 
-	attackby(obj/item/toy/ammo/gun/A as obj, mob/user as mob)
+/obj/item/toy/gun/attackby(obj/item/toy/ammo/gun/A as obj, mob/user as mob)
 
-		if (istype(A, /obj/item/toy/ammo/gun))
-			if (src.bullets >= 7)
-				user << "\blue It's already fully loaded!"
-				return 1
-			if (A.amount_left <= 0)
-				user << "\red There are no more caps!"
-				return 1
-			if (A.amount_left < (7 - src.bullets))
-				src.bullets += A.amount_left
-				user << text("\red You reload [] cap\s!", A.amount_left)
-				A.amount_left = 0
-			else
-				user << text("\red You reload [] cap\s!", 7 - src.bullets)
-				A.amount_left -= 7 - src.bullets
-				src.bullets = 7
-			A.update_icon()
+	if (istype(A, /obj/item/toy/ammo/gun))
+		if (src.bullets >= 7)
+			user << "\blue It's already fully loaded!"
 			return 1
-		return
+		if (A.amount_left <= 0)
+			user << "\red There are no more caps!"
+			return 1
+		if (A.amount_left < (7 - src.bullets))
+			src.bullets += A.amount_left
+			user << text("\red You reload [] cap\s!", A.amount_left)
+			A.amount_left = 0
+		else
+			user << text("\red You reload [] cap\s!", 7 - src.bullets)
+			A.amount_left -= 7 - src.bullets
+			src.bullets = 7
+		A.update_icon()
+		return 1
+	return
 
-	afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
-		if (flag)
-			return
-		if (!(istype(usr, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
-			usr << "\red You don't have the dexterity to do this!"
-			return
-		src.add_fingerprint(user)
-		if (src.bullets < 1)
-			user.show_message("\red *click* *click*", 2)
-			return
-		playsound(user, 'sound/weapons/Gunshot.ogg', 100, 1)
-		src.bullets--
-		for(var/mob/O in viewers(user, null))
-			O.show_message(text("\red <B>[] fires the [src] at []!</B>", user, target), 1, "\red You hear a gunshot", 2)
+/obj/item/toy/gun/afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
+	if (flag)
+		return
+	if (!user.IsAdvancedToolUser())
+		usr << "\red You don't have the dexterity to do this!"
+		return
+	src.add_fingerprint(user)
+	if (src.bullets < 1)
+		user.show_message("\red *click* *click*", 2)
+		return
+	playsound(user, 'sound/weapons/Gunshot.ogg', 100, 1)
+	src.bullets--
+	for(var/mob/O in viewers(user, null))
+		O.show_message(text("\red <B>[] fires the [src] at []!</B>", user, target), 1, "\red You hear a gunshot", 2)
 
 /obj/item/toy/ammo/gun
 	name = "ammo-caps"
@@ -174,10 +173,10 @@
 	m_amt = 10
 	var/amount_left = 7.0
 
-	update_icon()
-		src.icon_state = text("357-[]", src.amount_left)
-		src.desc = text("There are [] cap\s left! Make sure to recycle the box in an autolathe when it gets empty.", src.amount_left)
-		return
+/obj/item/toy/ammo/gun/update_icon()
+	src.icon_state = text("357-[]", src.amount_left)
+	src.desc = text("There are [] cap\s left! Make sure to recycle the box in an autolathe when it gets empty.", src.amount_left)
+	return
 
 /*
  * Toy crossbow
@@ -186,103 +185,101 @@
 /obj/item/toy/crossbow
 	name = "foam dart crossbow"
 	desc = "A weapon favored by many overactive children. Ages 8 and up."
-	icon = 'icons/obj/gun.dmi'
-	icon_state = "crossbow"
+	icon_state = "foamcrossbow"
 	item_state = "crossbow"
 	w_class = 2.0
 	attack_verb = list("attacked", "struck", "hit")
-	var/bullets = 5
+	var/bullets = 1
 
-	examine()
-		set src in view(2)
-		..()
-		if (bullets)
-			usr << "\blue It is loaded with [bullets] foam darts!"
+/obj/item/toy/crossbow/examine()
+	set src in view(2)
+	..()
+	if (bullets)
+		usr << "\blue It is loaded with [bullets] foam darts!"
 
-	attackby(obj/item/I as obj, mob/user as mob)
-		if(istype(I, /obj/item/toy/ammo/crossbow))
-			if(bullets <= 4)
-				user.drop_item()
-				qdel(I)
-				bullets++
-				user << "\blue You load the foam dart into the crossbow."
-			else
-				usr << "\red It's already fully loaded."
+/obj/item/toy/crossbow/attackby(obj/item/I as obj, mob/user as mob)
+	if(istype(I, /obj/item/toy/ammo/crossbow))
+		if(bullets <= 4)
+			user.drop_item()
+			qdel(I)
+			bullets++
+			user << "\blue You load the foam dart into the crossbow."
+		else
+			usr << "\red It's already fully loaded."
 
 
-	afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
-		if(!isturf(target.loc) || target == user) return
-		if(flag) return
+/obj/item/toy/crossbow/afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
+	if(!isturf(target.loc) || target == user) return
+	if(flag) return
 
-		if (locate (/obj/structure/table, src.loc))
-			return
-		else if (bullets)
-			var/turf/trg = get_turf(target)
-			var/obj/effect/foam_dart_dummy/D = new/obj/effect/foam_dart_dummy(get_turf(src))
-			bullets--
-			D.icon_state = "foamdart"
-			D.name = "foam dart"
-			playsound(user.loc, 'sound/items/syringeproj.ogg', 50, 1)
+	if (locate (/obj/structure/table, src.loc))
+		return
+	else if (bullets)
+		var/turf/trg = get_turf(target)
+		var/obj/effect/foam_dart_dummy/D = new/obj/effect/foam_dart_dummy(get_turf(src))
+		bullets--
+		D.icon_state = "foamdart"
+		D.name = "foam dart"
+		playsound(user.loc, 'sound/items/syringeproj.ogg', 50, 1)
 
-			for(var/i=0, i<6, i++)
-				if (D)
-					if(D.loc == trg) break
-					step_towards(D,trg)
+		for(var/i=0, i<6, i++)
+			if (D)
+				if(D.loc == trg) break
+				step_towards(D,trg)
 
-					for(var/mob/living/M in D.loc)
-						if(!istype(M,/mob/living)) continue
-						if(M == user) continue
-						for(var/mob/O in viewers(world.view, D))
-							O.show_message(text("\red [] was hit by the foam dart!", M), 1)
-						new /obj/item/toy/ammo/crossbow(M.loc)
-						qdel(D)
-						return
-
-					for(var/atom/A in D.loc)
-						if(A == user) continue
-						if(A.density)
-							new /obj/item/toy/ammo/crossbow(A.loc)
-							qdel(D)
-
-				sleep(1)
-
-			spawn(10)
-				if(D)
-					new /obj/item/toy/ammo/crossbow(D.loc)
+				for(var/mob/living/M in D.loc)
+					if(!istype(M,/mob/living)) continue
+					if(M == user) continue
+					for(var/mob/O in viewers(world.view, D))
+						O.show_message(text("\red [] was hit by the foam dart!", M), 1)
+					new /obj/item/toy/ammo/crossbow(M.loc)
 					qdel(D)
+					return
 
-			return
-		else if (bullets == 0)
-			user.Weaken(5)
-			for(var/mob/O in viewers(world.view, user))
-				O.show_message(text("\red [] realized they were out of ammo and starting scrounging for some!", user), 1)
+				for(var/atom/A in D.loc)
+					if(A == user) continue
+					if(A.density)
+						new /obj/item/toy/ammo/crossbow(A.loc)
+						qdel(D)
+
+			sleep(1)
+
+		spawn(10)
+			if(D)
+				new /obj/item/toy/ammo/crossbow(D.loc)
+				qdel(D)
+
+		return
+	else if (bullets == 0)
+		user.Weaken(5)
+		for(var/mob/O in viewers(world.view, user))
+			O.show_message(text("\red [] realized they were out of ammo and starting scrounging for some!", user), 1)
 
 
-	attack(mob/M as mob, mob/user as mob)
-		src.add_fingerprint(user)
+/obj/item/toy/crossbow/attack(mob/M as mob, mob/user as mob)
+	src.add_fingerprint(user)
 
 // ******* Check
 
-		if (src.bullets > 0 && M.lying)
+	if (src.bullets > 0 && M.lying)
 
-			for(var/mob/O in viewers(M, null))
-				if(O.client)
-					O.show_message(text("\red <B>[] casually lines up a shot with []'s head and pulls the trigger!</B>", user, M), 1, "\red You hear the sound of foam against skull", 2)
-					O.show_message(text("\red [] was hit in the head by the foam dart!", M), 1)
+		for(var/mob/O in viewers(M, null))
+			if(O.client)
+				O.show_message(text("\red <B>[] casually lines up a shot with []'s head and pulls the trigger!</B>", user, M), 1, "\red You hear the sound of foam against skull", 2)
+				O.show_message(text("\red [] was hit in the head by the foam dart!", M), 1)
 
-			playsound(user.loc, 'sound/items/syringeproj.ogg', 50, 1)
-			new /obj/item/toy/ammo/crossbow(M.loc)
-			src.bullets--
-		else if (M.lying && src.bullets == 0)
-			for(var/mob/O in viewers(M, null))
-				if (O.client)	O.show_message(text("\red <B>[] casually lines up a shot with []'s head, pulls the trigger, then realizes they are out of ammo and drops to the floor in search of some!</B>", user, M), 1, "\red You hear someone fall", 2)
-			user.Weaken(5)
-		return
+		playsound(user.loc, 'sound/items/syringeproj.ogg', 50, 1)
+		new /obj/item/toy/ammo/crossbow(M.loc)
+		src.bullets--
+	else if (M.lying && src.bullets == 0)
+		for(var/mob/O in viewers(M, null))
+			if (O.client)	O.show_message(text("\red <B>[] casually lines up a shot with []'s head, pulls the trigger, then realizes they are out of ammo and drops to the floor in search of some!</B>", user, M), 1, "\red You hear someone fall", 2)
+		user.Weaken(5)
+	return
 
 /obj/item/toy/ammo/crossbow
 	name = "foam dart"
 	desc = "Its nerf or nothing! Ages 8 and up."
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "foamdart"
 	w_class = 1.0
 
@@ -294,6 +291,13 @@
 	anchored = 1
 	density = 0
 
+//Foam Dart Shotty
+/obj/item/toy/crossbow/shotgun
+	name = "foam dart shotgun"
+	icon_state = "dartshotgun"
+	item_state = "shotgun"
+	w_class = 3.0
+	bullets = 2
 
 /*
  * Toy swords
@@ -304,32 +308,42 @@
 	icon = 'icons/obj/weapons.dmi'
 	icon_state = "sword0"
 	item_state = "sword0"
+	item_color = "blue"
 	var/active = 0.0
 	w_class = 2.0
 	flags = NOSHIELD
 	attack_verb = list("attacked", "struck", "hit")
 	var/hacked = 0
+	var/f_lum = 1
 
-	attack_self(mob/user as mob)
-		active = !( active )
-		if (active)
-			user << "\blue You extend the plastic blade with a quick flick of your wrist."
-			playsound(user, 'sound/weapons/saberon.ogg', 20, 1)
-			if(hacked)
-				icon_state = "swordrainbow"
-				item_state = "swordrainbow"
-			else
-				icon_state = "swordblue"
-				item_state = "swordblue"
-			w_class = 4
+/obj/item/toy/sword/attack_self(mob/user as mob)
+	active = !( active )
+	if (active)
+		user << "\blue You extend the plastic blade with a quick flick of your wrist."
+		playsound(user, 'sound/weapons/saberon.ogg', 20, 1)
+		if(hacked)
+			item_color = "rainbow"
 		else
-			user << "\blue You push the plastic blade back down into the handle."
-			playsound(user, 'sound/weapons/saberoff.ogg', 20, 1)
-			icon_state = "sword0"
-			item_state = "sword0"
-			w_class = 2
-		add_fingerprint(user)
-		return
+			item_color = "blue"
+		icon_state = "sword[item_color]"
+		item_state = "sword[item_color]"
+		w_class = 4
+		if(src in user.contents)
+			user.AddLuminosity(f_lum)
+		else
+			SetLuminosity(f_lum)
+	else
+		user << "\blue You push the plastic blade back down into the handle."
+		playsound(user, 'sound/weapons/saberoff.ogg', 20, 1)
+		icon_state = "sword0"
+		item_state = "sword0"
+		w_class = 2
+		if(src in user.contents)
+			user.AddLuminosity(-f_lum)
+		else
+			SetLuminosity(0)
+	add_fingerprint(user)
+	return
 
 // Copied from /obj/item/weapon/melee/energy/sword/attackby
 /obj/item/toy/sword/attackby(obj/item/weapon/W, mob/living/user)
@@ -347,6 +361,10 @@
 			if(hacked) // That's right, we'll only check the "original" "sword".
 				newSaber.hacked = 1
 				newSaber.item_color = "rainbow"
+			else
+				newSaber.item_color = item_color
+			if(active)
+				user.AddLuminosity(-f_lum)
 			user.unEquip(W)
 			user.unEquip(src)
 			qdel(W)
@@ -362,6 +380,17 @@
 				user.update_inv_hands(0)
 		else
 			user << "<span class='warning'>It's already fabulous!</span>"
+
+/obj/item/toy/sword/pickup(mob/user)
+	if(active)
+		SetLuminosity(0)
+		user.AddLuminosity(f_lum)
+
+/obj/item/toy/sword/dropped(mob/user)
+	if(active)
+		user.AddLuminosity(-f_lum)
+		SetLuminosity(f_lum)
+	..()
 
 /*
  * Subtype of Double-Bladed Energy Swords
@@ -413,31 +442,30 @@
 	var/uses = 30 //0 for unlimited uses
 	var/instant = 0
 	var/colourName = "red" //for updateIcon purposes
-	suicide_act(mob/user)
-		viewers(user) << "<span class='suicide'>[user] is jamming the [src.name] up \his nose and into \his brain. It looks like \he's trying to commit suicide.</span>"
-		return (BRUTELOSS|OXYLOSS)
-	New()
-		..()
-		name = "[colourName] crayon" //Makes crayons identifiable in things like grinders
+/obj/item/toy/crayon/suicide_act(mob/user)
+	user.visible_message("<span class='suicide'>[user] is jamming the [src.name] up \his nose and into \his brain. It looks like \he's trying to commit suicide.</span>")
+	return (BRUTELOSS|OXYLOSS)
+/obj/item/toy/crayon/New()
+	..()
+	name = "[colourName] crayon" //Makes crayons identifiable in things like grinders
 /*
  * Snap pops
  */
 /obj/item/toy/snappop
 	name = "snap pop"
 	desc = "Wow!"
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "snappop"
 	w_class = 1
 
-	throw_impact(atom/hit_atom)
-		..()
-		var/datum/effect/effect/system/spark_spread/s = new /datum/effect/effect/system/spark_spread
-		s.set_up(3, 1, src)
-		s.start()
-		new /obj/effect/decal/cleanable/ash(src.loc)
-		src.visible_message("\red The [src.name] explodes!","\red You hear a snap!")
-		playsound(src, 'sound/effects/snap.ogg', 50, 1)
-		qdel(src)
+/obj/item/toy/snappop/throw_impact(atom/hit_atom)
+	..()
+	var/datum/effect/effect/system/spark_spread/s = new /datum/effect/effect/system/spark_spread
+	s.set_up(3, 1, src)
+	s.start()
+	new /obj/effect/decal/cleanable/ash(src.loc)
+	src.visible_message("<span class='suicide'> The [src.name] explodes!","</span> You hear a snap!")
+	playsound(src, 'sound/effects/snap.ogg', 50, 1)
+	qdel(src)
 
 /obj/item/toy/snappop/Crossed(H as mob|obj)
 	if((ishuman(H))) //i guess carp and shit shouldn't set them off
@@ -457,7 +485,6 @@
  * Mech prizes
  */
 /obj/item/toy/prize
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "ripleytoy"
 	var/cooldown = 0
 
@@ -539,7 +566,6 @@
 /obj/item/toy/AI
 	name = "toy AI"
 	desc = "A little toy model AI core with real law announcing action!"
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "AI"
 	var/cooldown = 0
 
@@ -583,7 +609,6 @@ obj/item/toy/cards/proc/apply_card_vars(obj/item/toy/cards/newobj, obj/item/toy/
 obj/item/toy/cards/deck
 	name = "deck of cards"
 	desc = "A deck of space-grade playing cards."
-	icon = 'icons/obj/toy.dmi'
 	deckstyle = "nanotrasen"
 	icon_state = "deck_nanotrasen_full"
 	w_class = 2.0
@@ -709,7 +734,6 @@ obj/item/toy/cards/deck/attackby(obj/item/toy/cards/cardhand/C, mob/living/user)
 obj/item/toy/cards/cardhand
 	name = "hand of cards"
 	desc = "A number of cards not in a deck, customarily held in ones hand."
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "nanotrasen_hand2"
 	w_class = 1.0
 	var/list/currenthand = list()
@@ -802,7 +826,6 @@ obj/item/toy/cards/cardhand/apply_card_vars(obj/item/toy/cards/newobj,obj/item/t
 obj/item/toy/cards/singlecard
 	name = "card"
 	desc = "a card"
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "singlecard_nanotrasen_down"
 	w_class = 1.0
 	var/cardname = null
@@ -919,7 +942,6 @@ obj/item/toy/cards/deck/syndicate
 /obj/item/toy/nuke
 	name = "\improper Nuclear Fission Explosive toy"
 	desc = "A plastic model of a Nuclear Fission Explosive."
-	icon = 'icons/obj/toy.dmi'
 	icon_state = "nuketoyidle"
 	w_class = 2.0
 	var/cooldown = 0
@@ -939,8 +961,252 @@ obj/item/toy/cards/deck/syndicate
 		var/timeleft = (cooldown - world.time)
 		user << "<span class='alert'>Nothing happens, and '</span>[round(timeleft/10)]<span class='alert'>' appears on a small display.</span>"
 
+/*
+ * Action Figures
+ */
 
+/obj/item/toy/figure
+	name = "Non-Specific Action Figure action figure"
+	desc = "A \"Space Life\" brand... wait, what the hell is this thing?"
+	icon_state = "nuketoy"
+	var/cooldown = 0
+	var/toysay = "What the fuck did you do?"
+	var/obj/item/toy/accessory/hastoy = null
 
+/obj/item/toy/figure/attack_self(mob/user as mob)
+	if(!cooldown)
+		user << "<span class='notice'>The [src] says \"[toysay]\".</span>"
+		playsound(user, 'sound/machines/click.ogg', 20, 1)
+		cooldown = 1
+		spawn(30) cooldown = 0
 
+/*/obj/item/toy/figure/attack_hand(mob/user as mob)
+	if(loc == user)
+		if(!cooldown)
+			user << "<span class='notice'>The [src] says \"[toysay]\".</span>"
+		playsound(user, 'sound/machines/click.ogg', 20, 1)
+			cooldown = 1
+			spawn(30) cooldown = 0
+			return
+*/
+/obj/item/toy/figure/cmo
+	name = "Chief Medical Officer action figure"
+	desc = "A \"Space Life\" brand Chief Medical Officer action figure."
+	icon_state = "cmo"
+	toysay = "Suit sensors!"
 
+/obj/item/toy/figure/assistant
+	name = "Assistant action figure"
+	desc = "A \"Space Life\" brand Assistant action figure."
+	icon_state = "assistant"
+	toysay = "Grey tide world wide!"
 
+/obj/item/toy/figure/atmos
+	name = "Atmospheric Technician action figure"
+	desc = "A \"Space Life\" brand Atmospheric Technician action figure."
+	icon_state = "atmos"
+	toysay = "Glory to Atmosia!"
+
+/obj/item/toy/figure/bartender
+	name = "Bartender action figure"
+	desc = "A \"Space Life\" brand Bartender action figure."
+	icon_state = "bartender"
+	toysay = "Where is Pun Pun?"
+
+/obj/item/toy/figure/borg
+	name = "Cyborg action figure"
+	desc = "A \"Space Life\" brand Cyborg action figure."
+	icon_state = "borg"
+	toysay = "I. LIVE. AGAIN."
+
+/obj/item/toy/figure/botanist
+	name = "Botanist action figure"
+	desc = "A \"Space Life\" brand Botanist action figure."
+	icon_state = "botanist"
+	toysay = "Dude, I see colors..."
+
+/obj/item/toy/figure/captain
+	name = "Captain action figure"
+	desc = "A \"Space Life\" brand Captain action figure."
+	icon_state = "captain"
+	toysay = "Any heads of staff?"
+
+/obj/item/toy/figure/cargotech
+	name = "Cargo Technician action figure"
+	desc = "A \"Space Life\" brand Cargo Technician action figure."
+	icon_state = "cargotech"
+	toysay = "For Cargonia!"
+
+/obj/item/toy/figure/ce
+	name = "Chief Engineer action figure"
+	desc = "A \"Space Life\" brand Chief Engineer action figure."
+	icon_state = "ce"
+	toysay = "Wire the solars!"
+
+/obj/item/toy/figure/chaplain
+	name = "Chaplain action figure"
+	desc = "A \"Space Life\" brand Chaplain action figure."
+	icon_state = "chaplain"
+	var/diety = ""
+	toysay = "Praise Space Jesus!"
+
+/obj/item/toy/figure/chaplain/New()
+	..()
+	diety = "[pick(bibledeitynames)]"
+	desc = "Praise [diety]!"
+
+/obj/item/toy/figure/chef
+	name = "Chef action figure"
+	desc = "A \"Space Life\" brand Chef action figure."
+	icon_state = "chef"
+	toysay = "Pun-Pun is a tasty burger."
+
+/obj/item/toy/figure/chemist
+	name = "Chemist action figure"
+	desc = "A \"Space Life\" brand Chemist action figure."
+	icon_state = "chemist"
+	toysay = "Get your pills!"
+
+/obj/item/toy/figure/clown
+	name = "Clown action figure"
+	desc = "A \"Space Life\" brand Clown action figure."
+	icon_state = "clown"
+	toysay = "Honk!"
+
+/obj/item/toy/figure/ian
+	name = "Ian action figure"
+	desc = "A \"Space Life\" brand Ian action figure."
+	icon_state = "ian"
+	toysay = "Arf!"
+
+/obj/item/toy/figure/detective
+	name = "Detective action figure"
+	desc = "A \"Space Life\" brand Detective action figure."
+	icon_state = "detective"
+	toysay = "This airlock has grey jumpsuit and insulated glove fibers on it."
+
+/obj/item/toy/figure/dsquad
+	name = "Death Squad Officer action figure"
+	desc = "A \"Space Life\" brand Death Squad Officer action figure."
+	icon_state = "dsquad"
+	toysay = "Eliminate all threats!"
+
+/obj/item/toy/figure/engineer
+	name = "Engineer action figure"
+	desc = "A \"Space Life\" brand Engineer action figure."
+	icon_state = "engineer"
+	toysay = "Oh god, the singularity is loose!"
+
+/obj/item/toy/figure/geneticist
+	name = "Geneticist action figure"
+	desc = "A \"Space Life\" brand Geneticist action figure."
+	icon_state = "geneticist"
+	toysay = "Smash!"
+
+/obj/item/toy/figure/hop
+	name = "Head of Personel action figure"
+	desc = "A \"Space Life\" brand Head of Personel action figure."
+	icon_state = "hop"
+	toysay = "Giving out all access!"
+
+/obj/item/toy/figure/hos
+	name = "Head of Security action figure"
+	desc = "A \"Space Life\" brand Head of Security action figure."
+	icon_state = "hos"
+	toysay = "Get the justice chamber ready, I think we got a joker here."
+
+/obj/item/toy/figure/qm
+	name = "Quartermaster action figure"
+	desc = "A \"Space Life\" brand Quartermaster action figure."
+	icon_state = "qm"
+	toysay = "Please sign this form in triplicate and we will see about geting you a welding mask within 3 business days."
+
+/obj/item/toy/figure/janitor
+	name = "Janitor action figure"
+	desc = "A \"Space Life\" brand Janitor action figure."
+	icon_state = "janitor"
+	toysay = "Look at the signs, you idiot."
+
+/obj/item/toy/figure/lawyer
+	name = "Lawyer action figure"
+	desc = "A \"Space Life\" brand Lawyer action figure."
+	icon_state = "lawyer"
+	toysay = "My client is a dirty traitor!"
+
+/obj/item/toy/figure/librarian
+	name = "Librarian action figure"
+	desc = "A \"Space Life\" brand Librarian action figure."
+	icon_state = "librarian"
+	toysay = "One day while..."
+
+/obj/item/toy/figure/md
+	name = "Medical Doctor action figure"
+	desc = "A \"Space Life\" brand Medical Doctor action figure."
+	icon_state = "md"
+	toysay = "The patient is already dead!"
+
+/obj/item/toy/figure/mime
+	name = "Mime action figure"
+	desc = "A \"Space Life\" brand Mime action figure."
+	icon_state = "mime"
+	toysay = "..."
+
+/obj/item/toy/figure/miner
+	name = "Shaft Miner action figure"
+	desc = "A \"Space Life\" brand Shaft Miner action figure."
+	icon_state = "miner"
+	toysay = "Oh god it's eating my intestines!"
+
+/obj/item/toy/figure/ninja
+	name = "Ninja action figure"
+	desc = "A \"Space Life\" brand Ninja action figure."
+	icon_state = "ninja"
+	toysay = "Oh god! Stop shooting, I'm friendly!"
+
+/obj/item/toy/figure/wizard
+	name = "Wizard action figure"
+	desc = "A \"Space Life\" brand Wizard action figure."
+	icon_state = "wizard"
+	toysay = "Ei Nath!"
+
+/obj/item/toy/figure/rd
+	name = "Research Director action figure"
+	desc = "A \"Space Life\" brand Research Director action figure."
+	icon_state = "rd"
+	toysay = "Blowing all of the borgs!"
+
+/obj/item/toy/figure/roboticist
+	name = "Roboticist action figure"
+	desc = "A \"Space Life\" brand Roboticist action figure."
+	icon_state = "roboticist"
+	toysay = "Big stompy mechs!"
+
+/obj/item/toy/figure/scientist
+	name = "Scientist action figure"
+	desc = "A \"Space Life\" brand Scientist action figure."
+	icon_state = "scientist"
+	toysay = "For science!"
+
+/obj/item/toy/figure/syndie
+	name = "Nuclear Operative action figure"
+	desc = "A \"Space Life\" brand Nuclear Operative action figure."
+	icon_state = "syndie"
+	toysay = "Get that fucking disk!"
+
+/obj/item/toy/figure/secofficer
+	name = "Security Officer action figure"
+	desc = "A \"Space Life\" brand Security Officer action figure."
+	icon_state = "secofficer"
+	toysay = "I am the law!"
+
+/obj/item/toy/figure/virologist
+	name = "Virologist action figure"
+	desc = "A \"Space Life\" brand Virologist action figure."
+	icon_state = "virologist"
+	toysay = "The cure is potassium!"
+
+/obj/item/toy/figure/warden
+	name = "Warden action figure"
+	desc = "A \"Space Life\" brand Warden action figure."
+	icon_state = "warden"
+	toysay = "Seventeen minutes for coughing at an officer!"

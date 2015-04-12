@@ -8,11 +8,11 @@
 	var/modifystate = 0
 	var/list/ammo_type = list(/obj/item/ammo_casing/energy)
 	var/select = 1 //The state of the select fire switch. Determines from the ammo_type list what kind of shot is fired next.
+	var/can_charge = 1 // Can be recharged in common recharger?
 
 /obj/item/weapon/gun/energy/emp_act(severity)
-	power_supply.use(round(power_supply.maxcharge / severity))
+	power_supply.use(round(power_supply.charge / severity))
 	update_icon()
-	..()
 
 
 /obj/item/weapon/gun/energy/New()
@@ -64,7 +64,11 @@
 /obj/item/weapon/gun/energy/update_icon()
 	var/ratio = power_supply.charge / power_supply.maxcharge
 	ratio = Ceiling(ratio*4) * 25
+
 	var/obj/item/ammo_casing/energy/shot = ammo_type[select]
+	if(shot.e_cost > power_supply.charge)
+		ratio = 0
+
 	switch(modifystate)
 		if (0)
 			icon_state = "[initial(icon_state)][ratio]"

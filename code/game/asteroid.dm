@@ -56,6 +56,9 @@ proc/make_mining_asteroid_secret()
 	y_size = rand(3,7)
 	areapoints = x_size * y_size
 
+	if(!possiblethemes.len)
+		return 0 // Runtimes, sir!
+
 	switch(pick(possiblethemes))//what kind of room is this gonna be?
 		if("organharvest")
 			walltypes = list(/turf/simulated/wall/r_wall=2,/turf/simulated/wall=2,/turf/simulated/mineral/random/high_chance=1)
@@ -87,7 +90,7 @@ proc/make_mining_asteroid_secret()
 		if("cavein")
 			theme = "cavein"
 			walltypes = list(/turf/simulated/mineral/random/high_chance=1)
-			floortypes = list(/turf/simulated/floor/plating/asteroid/airless, /turf/simulated/floor/beach/sand)
+			floortypes = list(/turf/simulated/floor/plating/asteroid/airless)
 			treasureitems = list(/obj/mecha/working/ripley/mining=1, /obj/item/weapon/pickaxe/diamonddrill=2,/obj/item/weapon/gun/energy/kinetic_accelerator=1,
 							/obj/item/weapon/resonator=1, /obj/item/weapon/pickaxe/jackhammer=5)
 			fluffitems = list(/obj/effect/decal/cleanable/blood=3,/obj/effect/decal/remains/human=1,/obj/item/clothing/under/overalls=1,
@@ -96,7 +99,7 @@ proc/make_mining_asteroid_secret()
 		if("xenoden")
 			theme = "xenoden"
 			walltypes = list(/turf/simulated/mineral/random/high_chance=1)
-			floortypes = list(/turf/simulated/floor/plating/asteroid/airless, /turf/simulated/floor/beach/sand)
+			floortypes = list(/turf/simulated/floor/plating/asteroid/airless)
 			treasureitems = list(/obj/item/clothing/mask/facehugger=1)
 			fluffitems = list(/obj/effect/decal/remains/human=1,/obj/effect/decal/cleanable/xenoblood/xsplatter=5)
 

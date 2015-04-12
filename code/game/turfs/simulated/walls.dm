@@ -90,16 +90,16 @@
 
 /turf/simulated/wall/attack_paw(mob/user as mob)
 	user.changeNext_move(8)
-	if ((HULK in user.mutations))
+	if (user.has_organic_effect(/datum/organic_effect/hulk))
 		if (prob(hardness))
 			playsound(src, 'sound/effects/meteorimpact.ogg', 100, 1)
-			usr << text("\blue You smash through the wall.")
+			usr << text("<span class='notice'>You smash through the wall.</span>")
 			usr.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 			dismantle_wall(1)
 			return
 		else
 			playsound(src, 'sound/effects/bang.ogg', 50, 1)
-			usr << text("\blue You punch the wall.")
+			usr << text("<span class='notice'>You punch the wall.</span>")
 			return
 
 	return src.attack_hand(user)
@@ -111,30 +111,30 @@
 			if(M.environment_smash == 3)
 				dismantle_wall(1)
 				playsound(src, 'sound/effects/meteorimpact.ogg', 100, 1)
-				M << "<span class='info'>You smash through the wall.</span>"
+				M << "<span class='notice'>You smash through the wall.</span>"
 			else
-				M << "<span class='info'>This wall is far too strong for you to destroy.</span>"
+				M << "<span class='warning'>This wall is far too strong for you to destroy.</span>"
 		else
 			playsound(src, 'sound/effects/meteorimpact.ogg', 100, 1)
-			M << "<span class='info'>You smash through the wall.</span>"
+			M << "<span class='notice'>You smash through the wall.</span>"
 			dismantle_wall(1)
 			return
 
 /turf/simulated/wall/attack_hand(mob/user as mob)
 	user.changeNext_move(8)
-	if (HULK in user.mutations)
+	if (user.has_organic_effect(/datum/organic_effect/hulk))
 		if (prob(hardness))
 			playsound(src, 'sound/effects/meteorimpact.ogg', 100, 1)
-			usr << text("\blue You smash through the wall.")
+			usr << text("<span class='notice'>You smash through the wall.</span>")
 			usr.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 			dismantle_wall(1)
 			return
 		else
 			playsound(src, 'sound/effects/bang.ogg', 50, 1)
-			usr << text("\blue You punch the wall.")
+			usr << text("<span class='notice'>You punch the wall.</span>")
 			return
 
-	user << "\blue You push the wall but nothing happens!"
+	user << "<span class='notice'>You push the wall but nothing happens!</span>"
 	playsound(src, 'sound/weapons/Genhit.ogg', 25, 1)
 	src.add_fingerprint(user)
 	..()
@@ -142,7 +142,7 @@
 
 /turf/simulated/wall/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	user.changeNext_move(8)
-	if (!(istype(user, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
+	if (!user.IsAdvancedToolUser())
 		user << "<span class='warning'>You don't have the dexterity to do this!</span>"
 		return
 
@@ -157,7 +157,7 @@
 				thermitemelt(user)
 				return
 
-		else if(istype(W, /obj/item/weapon/pickaxe/plasmacutter))
+		else if(istype(W, /obj/item/weapon/gun/energy/plasmacutter))
 			thermitemelt(user)
 			return
 
@@ -191,7 +191,7 @@
 			user << "<span class='notice'>You need more welding fuel to complete this task.</span>"
 			return
 
-	else if( istype(W, /obj/item/weapon/pickaxe/plasmacutter) )
+	else if( istype(W, /obj/item/weapon/gun/energy/plasmacutter) )
 
 		user << "<span class='notice'>You begin slicing through the outer plating.</span>"
 		playsound(src, 'sound/items/Welder.ogg', 100, 1)
@@ -246,33 +246,8 @@
 				O.show_message("<span class='warning'>The wall was sliced apart by [user]!</span>", 1, "<span class='warning'>You hear metal being sliced apart and sparks flying.</span>", 2)
 		return
 
-	else if(istype(W,/obj/item/apc_frame))
-		var/obj/item/apc_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/newscaster_frame))
-		var/obj/item/newscaster_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/alarm_frame))
-		var/obj/item/alarm_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/firealarm_frame))
-		var/obj/item/firealarm_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/light_fixture_frame))
-		var/obj/item/light_fixture_frame/AH = W
-		AH.try_build(src)
-		return
-
-	else if(istype(W,/obj/item/light_fixture_frame/small))
-		var/obj/item/light_fixture_frame/small/AH = W
+	else if(istype(W,/obj/item/wall_frame))
+		var/obj/item/wall_frame/AH = W
 		AH.try_build(src)
 		return
 
@@ -281,6 +256,9 @@
 		place_poster(W,user)
 		return
 
+	else
+		return attack_hand(user)
+	return
 
 /turf/simulated/wall/proc/thermitemelt(mob/user as mob)
 	if(mineral == "diamond")
@@ -311,12 +289,3 @@
 		spawn(50)
 			if(O)	qdel(O)
 	return
-
-/turf/simulated/wall/meteorhit(obj/M as obj)
-	if (prob(15))
-		dismantle_wall()
-	else if(prob(70))
-		ChangeTurf(/turf/simulated/floor/plating)
-	else
-		ReplaceWithLattice()
-	return 0

@@ -28,6 +28,7 @@
 	item_state = "sterile"
 	w_class = 1
 	flags = MASKCOVERSMOUTH
+	flags_inv = HIDEFACE
 	gas_transfer_coefficient = 0.90
 	permeability_coefficient = 0.01
 	armor = list(melee = 0, bullet = 0, laser = 0,energy = 0, bomb = 0, bio = 25, rad = 0)
@@ -99,3 +100,13 @@ obj/item/clothing/mask/bandana/green
 	name = "botany bandana"
 	desc = "It's a green bandana with some fine nanotech lining."
 	icon_state = "bandbotany"
+
+/obj/item/clothing/mask/bandana/skull
+	name = "skull bandana"
+	desc = "It's a black bandana with a skull pattern."
+	icon_state = "bandskull"
+
+/obj/item/clothing/mask/bandana/black
+	name = "black bandana"
+	desc = "It's a black bandana."
+	icon_state = "bandblack"

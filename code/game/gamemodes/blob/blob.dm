@@ -11,7 +11,7 @@ var/list/blob_nodes = list()
 	config_tag = "blob"
 	antag_flag = BE_BLOB
 
-	required_players = 30
+	required_players = 17
 	required_enemies = 1
 	recommended_enemies = 1
 
@@ -24,9 +24,9 @@ var/list/blob_nodes = list()
 
 	var/cores_to_spawn = 1
 	var/players_per_core = 30
-	var/blob_point_rate = 3
+	var/blob_point_rate = 1.75
 
-	var/blobwincount = 350
+	var/blobwincount = 450
 
 	var/list/infected_crew = list()
 
@@ -34,6 +34,9 @@ var/list/blob_nodes = list()
 	cores_to_spawn = max(round(num_players()/players_per_core, 1), 1)
 
 	blobwincount = initial(blobwincount) * cores_to_spawn
+
+	if(num_players() < 30)
+		blob_point_rate = min((num_players()*0.1)+(0.4-((num_players()-17)/40)), 3)
 
 	for(var/datum/mind/player in antag_candidates)
 		for(var/job in restricted_jobs)//Removing robots from the list
@@ -111,7 +114,7 @@ var/list/blob_nodes = list()
 		if(B)
 			B.max_occurrences = 0 // disable the event
 	else
-		error("Events variable is null in blob gamemode post setup.")
+		ERROR("Events variable is null in blob gamemode post setup.")
 
 	spawn(10)
 		start_state = new /datum/station_state()
@@ -156,10 +159,7 @@ var/list/blob_nodes = list()
 			return
 
 		if (1)
-			command_alert("Confirmed outbreak of level 5 biohazard aboard [station_name()]. All personnel must contain the outbreak.", "Biohazard Alert")
-			for(var/mob/M in player_list)
-				if(!istype(M,/mob/new_player))
-					M << sound('sound/AI/outbreak5.ogg')
+			priority_announce("Confirmed outbreak of level 5 biohazard aboard [station_name()]. All personnel must contain the outbreak.", "Biohazard Alert", 'sound/AI/outbreak5.ogg')
 			return
 
 	return

@@ -72,8 +72,8 @@
 /turf/simulated/mineral/random
 	name = "Mineral deposit"
 	icon_state = "rock"
-	var/mineralSpawnChanceList = list("Uranium" = 20, "Diamond" = 4, "Gold" = 10, "Silver" = 15, "Plasma" = 25, "Iron" = 40, "Gibtonite" = 2/*, "Adamantine" =5*/, "Cave" = 2)//Currently, Adamantine won't spawn as it has no uses. -Durandan
-	var/mineralChance = 10  //means 10% chance of this plot changing to a mineral deposit
+	var/mineralSpawnChanceList = list("Uranium" = 18, "Diamond" = 5, "Gold" = 12, "Silver" = 18, "Plasma" = 25, "Iron" = 40, "Gibtonite" = 2/*, "Adamantine" =5*/, "Cave" = 2)//Currently, Adamantine won't spawn as it has no uses. -Durandan
+	var/mineralChance = 17
 
 /turf/simulated/mineral/random/New()
 	..()
@@ -111,7 +111,7 @@
 /turf/simulated/mineral/random/high_chance
 	icon_state = "rock_highchance"
 	mineralChance = 25
-	mineralSpawnChanceList = list("Uranium" = 35, "Diamond" = 20, "Gold" = 45, "Silver" = 50, "Plasma" = 30)
+	mineralSpawnChanceList = list("Uranium" = 35, "Diamond" = 30, "Gold" = 45, "Silver" = 50, "Plasma" = 30)
 
 /turf/simulated/mineral/random/high_chance/New()
 	icon_state = "rock"
@@ -128,8 +128,8 @@
 
 /turf/simulated/mineral/random/low_chance
 	icon_state = "rock_lowchance"
-	mineralChance = 5
-	mineralSpawnChanceList = list("Uranium" = 5, "Diamond" = 2, "Gold" = 5, "Silver" = 10, "Plasma" = 15, "Iron" = 35, "Gibtonite" = 1)
+	mineralChance = 8
+	mineralSpawnChanceList = list("Uranium" = 8, "Diamond" = 2, "Gold" = 4, "Silver" = 8, "Plasma" = 20, "Iron" = 40, "Gibtonite" = 1)
 
 /turf/simulated/mineral/random/low_chance/New()
 	icon_state = "rock"
@@ -179,7 +179,7 @@
 	name = "Plasma deposit"
 	icon_state = "rock_Plasma"
 	mineralName = "Plasma"
-	spreadChance = 5
+	spreadChance = 8
 	spread = 1
 	hidden = 1
 	scan_state = "rock_Plasma"
@@ -381,7 +381,7 @@
 
 /turf/simulated/mineral/attackby(obj/item/weapon/W as obj, mob/user as mob)
 
-	if (!(istype(usr, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
+	if (!user.IsAdvancedToolUser())
 		usr << "\red You don't have the dexterity to do this!"
 		return
 

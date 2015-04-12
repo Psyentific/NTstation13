@@ -2,15 +2,11 @@
 	mob_list -= src
 	dead_mob_list -= src
 	living_mob_list -= src
-	//Set the mob up for GC. Mobs have lots of references
-	if(client)
-		for(var/atom/movable/AM in client.screen)
-			qdel(AM)
-		client.screen = list()
-	del(hud_used)
-	spellremove(src)
+	qdel(hud_used)
+	if(mind && mind.current == src)
+		spellremove(src)
 	for(var/infection in viruses)
-		del(infection)
+		qdel(infection)
 	ghostize()
 	..()
 
@@ -497,26 +493,9 @@ var/list/slot_equipment_priority = list( \
 			var/obj/item/what = get_item_by_slot(slot)
 
 			if(what)
-				if(what.flags & NODROP)
-					usr << "<span class='notice'>You can't remove \the [what.name], it appears to be stuck!</span>"
-					return
-				visible_message("<span class='danger'>[usr] tries to remove [src]'s [what.name].</span>", \
-								"<span class='userdanger'>[usr] tries to remove [src]'s [what.name].</span>")
-				what.add_fingerprint(usr)
-				if(do_mob(usr, src, STRIP_DELAY))
-					if(what && Adjacent(usr))
-						unEquip(what)
+				usr.stripPanelUnequip(src,what,slot)
 			else
-				what = usr.get_active_hand()
-				if(what && (what.flags & NODROP))
-					usr << "<span class='notice'>You can't put \the [what.name] on [src], it's stuck to your hand!</span>"
-					return
-				if(what && what.mob_can_equip(src, slot, 1))
-					visible_message("<span class='notice'>[usr] tries to put [what] on [src].</span>")
-					if(do_mob(usr, src, STRIP_DELAY * 0.5))
-						if(what && Adjacent(usr))
-							usr.unEquip(what)
-							equip_to_slot_if_possible(what, slot, 0, 1)
+				usr.stripPanelEquip(src,what,slot)
 
 	if(usr.machine == src)
 		if(Adjacent(usr))
@@ -524,6 +503,15 @@ var/list/slot_equipment_priority = list( \
 		else
 			usr << browse(null,"window=mob\ref[src]")
 
+// The src mob is trying to strip an item from someone
+// Defined in living.dm
+/mob/proc/stripPanelUnequip(obj/item/what, mob/who)
+	return
+
+// The src mob is trying to place an item on someone
+// Defined in living.dm
+/mob/proc/stripPanelEquip(obj/item/what, mob/who)
+	return
 
 /mob/MouseDrop(mob/M)
 	..()
@@ -595,6 +583,8 @@ var/list/slot_equipment_priority = list( \
 			if(master_controller)
 				stat(null,"MasterController-[last_tick_duration] ([master_controller.processing?"On":"Off"]-[controller_iteration])")
 				stat(null,"Air-[master_controller.air_cost]\t#[global_activeturfs]")
+				stat(null,"Turfs-[master_controller.air_turfs]\tGroups-[master_controller.air_groups]")
+				stat(null,"SC-[master_controller.air_superconductivity]\tHP-[master_controller.air_highpressure]\tH-[master_controller.air_hotspots]")
 				stat(null,"Sun-[master_controller.sun_cost]")
 				stat(null,"Mob-[master_controller.mobs_cost]\t#[mob_list.len]")
 				stat(null,"Dis-[master_controller.diseases_cost]\t#[active_diseases.len]")
@@ -623,6 +613,9 @@ var/list/slot_equipment_priority = list( \
 		if(mind.changeling)
 			add_stings_to_statpanel(mind.changeling.purchasedpowers)
 	add_spells_to_statpanel(mob_spell_list)
+
+	for(var/obj/O in src)
+		O.Stat()
 
 /mob/proc/add_spells_to_statpanel(var/list/spells)
 	for(var/obj/effect/proc_holder/spell/S in spells)
@@ -664,10 +657,10 @@ var/list/slot_equipment_priority = list( \
                 canmove = 1
         if(buckled)
                 lying = 90 * bed
+                anchored = buckled
         else
                 if((ko || resting) && !lying)
                         fall(ko)
-        anchored = buckled
         canmove = !(ko || resting || stunned || buckled)
         density = !lying
         update_transform()
@@ -715,6 +708,9 @@ var/list/slot_equipment_priority = list( \
 
 /mob/proc/IsAdvancedToolUser()//This might need a rename but it should replace the can this mob use things check
 	return 0
+
+/mob/proc/swap_hand()
+	return
 
 /mob/proc/Jitter(amount)
 	jitteriness = max(jitteriness,amount,0)
@@ -806,3 +802,21 @@ var/list/slot_equipment_priority = list( \
 	update_canmove()
 	return
 
+/mob/proc/activate_hand(var/selhand) //0 or "r" or "right" for right hand; 1 or "l" or "left" for left hand.
+	return
+
+/mob/proc/get_airtank()
+    return null
+
+/mob/living/carbon/get_airtank()
+    for(var/obj/item/weapon/tank/T in list(l_hand,r_hand, back))
+        if(T.canbreathe)
+            return T
+    return null
+/mob/living/carbon/human/get_airtank()
+    for(var/obj/item/weapon/tank/T in list(l_hand,r_hand,s_store, belt, l_store, r_store, back))
+        if(T.canbreathe)
+            return T
+    return null
+/mob/proc/assess_threat() //For sec bot threat assessment
+	return

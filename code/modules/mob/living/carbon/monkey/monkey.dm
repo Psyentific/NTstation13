@@ -10,12 +10,6 @@
 	update_icon = 0		///no need to call regenerate_icon
 	ventcrawler = 1
 
-/mob/living/carbon/monkey/punpun
-	name = "Pun Pun"
-	voice_name = "Pun Pun"
-	icon_state = "punpun1"
-	gender = MALE
-
 /mob/living/carbon/monkey/New()
 	create_reagents(1000)
 	verbs += /mob/living/proc/mob_sleep
@@ -73,20 +67,6 @@
 			step(AM, t)
 		now_pushing = null
 
-
-/mob/living/carbon/monkey/meteorhit(obj/O as obj)
-	for(var/mob/M in viewers(src, null))
-		M.show_message(text("\red [] has been hit by []", src, O), 1)
-	if (health > 0)
-		var/shielded = 0
-		adjustBruteLoss(30)
-		if ((O.icon_state == "flaming" && !( shielded )))
-			adjustFireLoss(40)
-		health = 100 - getOxyLoss() - getToxLoss() - getFireLoss() - getBruteLoss()
-	return
-
-/mob/living/carbon/monkey/bullet_act(var/obj/item/projectile/P, var/def_zone)
-	return (..(P , def_zone, 1))
 
 /mob/living/carbon/monkey/attack_paw(mob/M as mob)
 	..()
@@ -239,7 +219,7 @@
 			playsound(loc, 'sound/weapons/pierce.ogg', 25, 1, -1)
 			var/damage = 5
 			if(prob(95))
-				Weaken(15)
+				Weaken(10)
 				for(var/mob/O in viewers(src, null))
 					if ((O.client && !( O.blinded )))
 						O.show_message(text("<span class='danger'>[] has tackled down [name]!</span>", M), 1)
@@ -377,7 +357,37 @@
 
 
 /mob/living/carbon/monkey/IsAdvancedToolUser()//Unless its monkey mode monkeys cant use advanced tools
-	if(!ticker)	return 0
-	if(!ticker.mode.name == "monkey")	return 0
+	return 0
+
+/mob/living/carbon/monkey/canBeHandcuffed()
 	return 1
 
+/mob/living/carbon/monkey/assess_threat(var/obj/machinery/bot/secbot/judgebot, var/lasercolor)
+	if(judgebot.emagged == 2)
+		return 10 //Everyone is a criminal!
+	var/threatcount = 0
+
+	//Lasertag bullshit
+	if(lasercolor)
+		if(lasercolor == "b")//Lasertag turrets target the opposing team, how great is that? -Sieve
+			if((istype(r_hand,/obj/item/weapon/gun/energy/laser/redtag)) || (istype(l_hand,/obj/item/weapon/gun/energy/laser/redtag)))
+				threatcount += 4
+
+		if(lasercolor == "r")
+			if((istype(r_hand,/obj/item/weapon/gun/energy/laser/bluetag)) || (istype(l_hand,/obj/item/weapon/gun/energy/laser/bluetag)))
+				threatcount += 4
+
+		return threatcount
+
+	//Check for weapons
+	if(judgebot.weaponscheck)
+		if(judgebot.check_for_weapons(l_hand))
+			threatcount += 4
+		if(judgebot.check_for_weapons(r_hand))
+			threatcount += 4
+
+	//Loyalty implants imply trustworthyness
+	if(isloyal(src))
+		threatcount -= 1
+
+	return threatcount

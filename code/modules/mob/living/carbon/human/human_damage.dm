@@ -43,15 +43,15 @@
 		heal_overall_damage(0, -amount)
 
 /mob/living/carbon/human/Stun(amount)
-	if(HULK in mutations)	return
+	if(has_organic_effect(/datum/organic_effect/hulk))	return
 	..()
 
 /mob/living/carbon/human/Weaken(amount)
-	if(HULK in mutations)	return
+	if(has_organic_effect(/datum/organic_effect/hulk))	return
 	..()
 
 /mob/living/carbon/human/Paralyse(amount)
-	if(HULK in mutations)	return
+	if(has_organic_effect(/datum/organic_effect/hulk))	return
 	..()
 
 mob/living/carbon/human/proc/hat_fall_prob()
@@ -153,7 +153,7 @@ mob/living/carbon/human/proc/hat_fall_prob()
 /mob/living/carbon/human/proc/get_organ(var/zone)
 	if(!zone)	zone = "chest"
 	for(var/obj/item/organ/limb/O in organs)
-		if(O.name == zone)
+		if(initial(O.name) == zone)
 			return O
 	return null
 

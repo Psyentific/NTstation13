@@ -66,7 +66,15 @@
 
 /datum/game_mode/traitor/post_setup()
 	for(var/datum/mind/traitor in traitors)
-		forge_traitor_objectives(traitor)
+		if(!exchange_blue && traitors.len >= 5) //Set up an exchange if there are enough traitors
+			if(!exchange_red)
+				exchange_red = traitor
+			else
+				exchange_blue = traitor
+				assign_exchange_role(exchange_red)
+				assign_exchange_role(exchange_blue)
+		else
+			forge_traitor_objectives(traitor)
 		spawn(rand(10,100))
 			finalize_traitor(traitor)
 			greet_traitor(traitor)
@@ -77,9 +85,10 @@
 	return 1
 
 /datum/game_mode/traitor/make_antag_chance(var/mob/living/carbon/human/character) //Assigns traitor to latejoiners
-	if(traitors.len >= round(joined_player_list.len / (config.traitor_scaling_coeff * scale_modifier)) + 1) //Caps number of latejoin antagonists
+	var/traitorcap = round(joined_player_list.len / (config.traitor_scaling_coeff * scale_modifier))
+	if(traitors.len >= traitorcap + 1) //Upper cap for number of latejoin antagonists
 		return
-	if (prob(100/(config.traitor_scaling_coeff * scale_modifier)))
+	if(traitors.len <= (traitorcap - 1) || prob(100 / (config.traitor_scaling_coeff * scale_modifier)))
 		if(character.client.prefs.be_special & BE_TRAITOR)
 			if(!jobban_isbanned(character.client, "traitor") && !jobban_isbanned(character.client, "Syndicate"))
 				if(!(character.job in ticker.mode.restricted_jobs))
@@ -107,37 +116,33 @@
 			traitor.objectives += block_objective
 
 	else
-		//Assign two traitors for exchange objective
-		if((traitors.len > 5) && !exchange_blue)
-			if(!exchange_red)
-				exchange_red = traitor
-			else
-				exchange_blue = traitor
-				assign_exchange_role(exchange_red,"red")
-				assign_exchange_role(exchange_blue,"blue")
+		if(prob(50))
+			var/datum/objective/assassinate/kill_objective = new
+			kill_objective.owner = traitor
+			kill_objective.find_target()
+			traitor.objectives += kill_objective
 		else
-			if(prob(50))
-				var/datum/objective/assassinate/kill_objective = new
-				kill_objective.owner = traitor
-				kill_objective.find_target()
-				traitor.objectives += kill_objective
-			else
-				var/datum/objective/steal/steal_objective = new
-				steal_objective.owner = traitor
-				steal_objective.find_target()
-				traitor.objectives += steal_objective
+			var/datum/objective/steal/steal_objective = new
+			steal_objective.owner = traitor
+			steal_objective.find_target()
+			traitor.objectives += steal_objective
 
-			if(prob(90))
-				if (!(locate(/datum/objective/escape) in traitor.objectives))
-					var/datum/objective/escape/escape_objective = new
-					escape_objective.owner = traitor
-					traitor.objectives += escape_objective
-			else
-				if (!(locate(/datum/objective/hijack) in traitor.objectives))
-					var/datum/objective/hijack/hijack_objective = new
-					hijack_objective.owner = traitor
-					traitor.objectives += hijack_objective
+		forge_escape_objective(traitor)
+
 	return
+
+
+/datum/game_mode/proc/forge_escape_objective(var/datum/mind/traitor)
+	if(prob(90))
+		if (!(locate(/datum/objective/escape) in traitor.objectives))
+			var/datum/objective/escape/escape_objective = new
+			escape_objective.owner = traitor
+			traitor.objectives += escape_objective
+	else
+		if (!(locate(/datum/objective/hijack) in traitor.objectives))
+			var/datum/objective/hijack/hijack_objective = new
+			hijack_objective.owner = traitor
+			traitor.objectives += hijack_objective
 
 
 /datum/game_mode/proc/greet_traitor(var/datum/mind/traitor)
@@ -260,7 +265,7 @@
 	if (traitor_mob.mind)
 		if (traitor_mob.mind.assigned_role == "Clown")
 			traitor_mob << "Your training has allowed you to overcome your clownish nature, allowing you to wield weapons without harming yourself."
-			traitor_mob.mutations.Remove(CLUMSY)
+			traitor_mob.remove_organic_effect(/datum/organic_effect/clumsy)
 
 	// find a radio! toolbox(es), backpack, belt, headset
 	var/loc = ""
@@ -318,38 +323,35 @@
 			traitor_mob << "Unfortunately, the Syndicate did not provide you with a code response."
 		traitor_mob << "Use the code words in the order provided, during regular conversation, to identify other agents. Proceed with caution, however, as everyone is a potential foe."
 	//End code phrase.
-	if(traitor_mob.mind == exchange_red || traitor_mob.mind == exchange_blue)
-		equip_exchange(traitor_mob)
 
-/datum/game_mode/proc/assign_exchange_role(var/datum/mind/owner, var/faction)
+/datum/game_mode/proc/assign_exchange_role(var/datum/mind/owner)
+	//set faction
+	var/faction = "red"
+	if(owner == exchange_blue)
+		faction = "blue"
+
+	//Assign objectives
 	var/datum/objective/steal/exchange/exchange_objective = new
+	exchange_objective.set_faction(faction,((faction == "red") ? exchange_blue : exchange_red))
 	exchange_objective.owner = owner
-	exchange_objective.set_faction(faction,(faction == "red" ? exchange_blue : exchange_red))
 	owner.objectives += exchange_objective
 
 	if(prob(20))
 		var/datum/objective/steal/exchange/backstab/backstab_objective = new
-		backstab_objective.owner = owner
 		backstab_objective.set_faction(faction)
+		backstab_objective.owner = owner
 		owner.objectives += backstab_objective
 
-	var/datum/objective/escape_objective
-	if(90)
-		escape_objective = new/datum/objective/escape
-	else
-		escape_objective = new/datum/objective/hijack
-	escape_objective.owner = owner
-	owner.objectives += escape_objective
+	forge_escape_objective(owner)
 
-/datum/game_mode/proc/equip_exchange(mob/living/carbon/human/mob)
-	if(!istype(mob))
-		return
+	//Spawn and equip documents
+	var/mob/living/carbon/human/mob = owner.current
 
 	var/obj/item/weapon/folder/syndicate/folder
-	if(mob.mind == exchange_red)
-		folder = new/obj/item/weapon/folder/syndicate/red(mob)
+	if(owner == exchange_red)
+		folder = new/obj/item/weapon/folder/syndicate/red(mob.locs)
 	else
-		folder = new/obj/item/weapon/folder/syndicate/blue(mob)
+		folder = new/obj/item/weapon/folder/syndicate/blue(mob.locs)
 
 	var/list/slots = list (
 		"backpack" = slot_in_backpack,
@@ -358,9 +360,10 @@
 		"left hand" = slot_l_hand,
 		"right hand" = slot_r_hand,
 	)
-	var/where = mob.equip_in_one_of_slots(folder, slots)
-	if (!where)
-		mob << "<span class='warning'>Your Syndicate employer was unable to send you their secret documents.</span>"
-	else
-		mob << "<span class='info'>In your [where] is a folder containing <b>secret documents</b> that another Syndicate group wants. We have set up a meeting with one of their agents on station to make an exchange. Exercise extreme caution as they cannot be trusted and may be hostile.</span>"
-		mob.update_icons()
+
+	var/where = "At your feet"
+	var/equipped_slot = mob.equip_in_one_of_slots(folder, slots)
+	if (equipped_slot)
+		where = "In your [equipped_slot]"
+	mob << "<BR><BR><span class='info'>[where] is a folder containing <b>secret documents</b> that another Syndicate group wants. We have set up a meeting with one of their agents on station to make an exchange. Exercise extreme caution as they cannot be trusted and may be hostile.</span><BR>"
+	mob.update_icons()

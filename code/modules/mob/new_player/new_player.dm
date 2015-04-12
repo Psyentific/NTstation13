@@ -24,9 +24,10 @@
 
 		if(!ticker || ticker.current_state <= GAME_STATE_PREGAME)
 			if(!ready)	output += "<p><a href='byond://?src=\ref[src];ready=1'>Declare Ready</A></p>"
-			else	output += "<p><b>You are ready</b> <a href='byond://?src=\ref[src];ready=2'>Cancel</A></p>"
+			else	output += "<p><b>You are ready</b> <a href='byond://?src=\ref[src];ready=0'>Cancel</A></p>"
 
 		else
+			output += "<a href='byond://?src=\ref[src];manifest=1'>Crew Manifest</A><br><br>"
 			output += "<p><a href='byond://?src=\ref[src];late_join=1'>Join Game!</A></p>"
 
 		output += "<p><a href='byond://?src=\ref[src];observe=1'>Observe</A></p>"
@@ -94,7 +95,7 @@
 			return 1
 
 		if(href_list["ready"])
-			ready = !ready
+			ready = text2num(href_list["ready"])
 
 		if(href_list["refresh"])
 			src << browse(null, "window=playersetup") //closes the player setup window
@@ -128,6 +129,9 @@
 				usr << "\red The round is either not ready, or has already finished..."
 				return
 			LateChoices()
+
+		if(href_list["manifest"])
+			ViewManifest()
 
 		if(href_list["SelectedJob"])
 
@@ -330,6 +334,8 @@
 		var/mob/living/carbon/human/new_character = new(loc)
 		new_character.lastarea = get_area(loc)
 
+		create_dna(new_character)
+
 		if(config.force_random_names || appearance_isbanned(src))
 			client.prefs.random_character()
 			client.prefs.real_name = random_name(gender)
@@ -349,6 +355,12 @@
 
 		return new_character
 
+	proc/ViewManifest()
+		var/dat = "<html><body>"
+		dat += "<h4>Crew Manifest</h4>"
+		dat += data_core.get_manifest(OOC = 1)
+
+		src << browse(dat, "window=manifest;size=370x420;can_close=1")
 
 	Move()
 		return 0

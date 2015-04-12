@@ -1,7 +1,7 @@
 //////Kitchen Spike
 
 /obj/structure/kitchenspike
-	name = "a meat spike"
+	name = "meat spike"
 	icon = 'icons/obj/kitchen.dmi'
 	icon_state = "spike"
 	desc = "A spike for collecting meat from animals"
@@ -67,7 +67,6 @@
 					usr << "You remove the last piece of meat from the monkey!"
 					src.icon_state = "spike"
 					src.occupied = 0
-					new /obj/item/clothing/head/monkeypelt(loc)
 			else if(src.meattype == 2)
 				if(src.meat > 1)
 					src.meat--

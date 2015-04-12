@@ -47,6 +47,9 @@
 	desc = "Purple slime solidified into a wall."
 	icon_state = "resinwall"	//same as resin, but consistency ho!
 
+/obj/structure/alien/resin/wall/BlockSuperconductivity()
+	return 1
+
 /obj/structure/alien/resin/membrane
 	name = "resin membrane"
 	desc = "Purple slime just thin enough to let light pass through."
@@ -97,7 +100,7 @@
 
 
 /obj/structure/alien/resin/attack_hand(mob/user)
-	if(HULK in user.mutations)
+	if(user.has_organic_effect(/datum/organic_effect/hulk))
 		user.visible_message("<span class='danger'>[user] destroys [src]!</span>")
 		health = 0
 		healthcheck()

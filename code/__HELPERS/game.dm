@@ -24,6 +24,17 @@
 			return A
 	return 0
 
+/proc/find_mob_loc(atom/A)
+	var/atom/location = A.loc
+	for(var/i=1, i<=30, i++)
+		if(ismob(location))
+			return location
+		else if(location)
+			location = location.loc
+		else
+			return null
+	return null
+
 /proc/in_range(source, user)
 	if(get_dist(source, user) <= 1)
 		return 1
@@ -169,11 +180,11 @@ proc/recursive_mob_check(var/atom/O,var/client_check=1,var/sight_check=1,var/inc
 			found_mobs |= A
 
 		for(var/atom/B in A)
-			if(!(B in processed_list))
+			if(!processed_list[B])
 				processing_list |= B
 
-		processing_list -= A
-		processed_list |= A
+		processing_list.Cut(1, 2)
+		processed_list[A] = A
 
 	return found_mobs
 

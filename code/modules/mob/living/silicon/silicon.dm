@@ -15,6 +15,10 @@
 	var/lawcheck[1]
 	var/ioncheck[1]
 
+	var/sensor_mode = 0 //Determines the current HUD.
+	#define 	SEC_HUD 1 //Security HUD mode
+	#define 	MED_HUD 2 //Medical HUD mode
+
 /mob/living/silicon/proc/cancelAlarm()
 	return
 
@@ -31,7 +35,7 @@
 		alarm_types_clear[type] += 1
 
 	if(!in_cooldown)
-		spawn(10 * 10) // 10 seconds
+		spawn(3 * 10) // 10 seconds
 
 			if(alarms_to_show.len < 5)
 				for(var/msg in alarms_to_show)
@@ -133,7 +137,8 @@
 
 /mob/living/silicon/bullet_act(var/obj/item/projectile/Proj)
 	if((Proj.damage_type == BRUTE || Proj.damage_type == BURN))
-		..(Proj)
+		adjustBruteLoss(Proj.damage)
+	Proj.on_hit(src,2)
 	return 2
 
 /mob/living/silicon/apply_effect(var/effect = 0,var/effecttype = STUN, var/blocked = 0)
@@ -298,3 +303,32 @@
                                                 return
                         step(AM, t)
                 now_pushing = null
+
+/mob/living/silicon/put_in_hand_check() // This check is for borgs being able to receive items, not put them in others' hands.
+	return 0
+
+// The src mob is trying to place an item on someone
+// But the src mob is a silicon!!  Disable.
+/mob/living/silicon/stripPanelEquip(obj/item/what, mob/who, slot)
+	return 0
+
+/mob/living/silicon/assess_threat() //Secbots will not target silicons!
+	return -10
+
+/mob/living/silicon/verb/sensor_mode()
+	set name = "Set Sensor Augmentation"
+	var/sensor_type = input("Please select sensor type.", "Sensor Integration", null) in list("Security", "Medical"/*,"Light Amplification"*/,"Disable")
+	switch(sensor_type)
+		if ("Security")
+			sensor_mode = SEC_HUD
+			src << "<span class='notice'>Security records overlay enabled.</span>"
+
+		if ("Medical")
+			sensor_mode = MED_HUD
+			src << "<span class='notice'>Life signs monitor overlay enabled.</span>"/*
+		if ("Light Amplification")
+			src.sensor_mode = NIGHT
+			src << "<span class='notice'>Light amplification mode enabled.</span>"*/
+		if ("Disable")
+			sensor_mode = 0
+			src << "Sensor augmentations disabled."

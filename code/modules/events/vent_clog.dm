@@ -11,7 +11,7 @@
 	var/list/vents  = list()
 
 /datum/round_event/vent_clog/announce()
-	command_alert("The scrubbers network is experiencing a backpressure surge.  Some ejection of contents may occur.", "Atmospherics alert")
+	priority_announce("The scrubbers network is experiencing a backpressure surge.  Some ejection of contents may occur.", "Atmospherics alert")
 
 
 /datum/round_event/vent_clog/setup()
@@ -27,8 +27,8 @@
 	if(activeFor % interval == 0)
 		var/obj/vent = pick_n_take(vents)
 		if(vent && vent.loc)
-			var/list/gunk = list("water","carbon","flour","radium","toxin","cleaner","nutriment","condensedcapsaicin","mushroomhallucinogen","lube",
-								 "plantbgone","banana","anti_toxin","space_drugs","hyperzine","holywater","ethanol","hot_coco","pacid")
+			var/list/gunk = list("water","spore","flour","radium","frostoil","lube","jiutin","condensedcapsaicin","mushroomhallucinogen","lube",
+								 "chloralhydrate","lube","doctorsdelight","zombiepowder","hyperzine","holywater","blood","neurotoxin","mizarudol")
 			var/datum/reagents/R = new/datum/reagents(50)
 			R.my_atom = vent
 			R.add_reagent(pick(gunk), 50)

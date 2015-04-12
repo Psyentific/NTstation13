@@ -29,6 +29,17 @@
 	wreckage = /obj/structure/mecha_wreckage/gygax/dark
 	max_equip = 4
 
+
+/obj/mecha/combat/gygax/loaded/New()
+	..()
+	var/obj/item/mecha_parts/mecha_equipment/ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/carbine
+	ME.attach(src)
+	ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack/flashbang
+	ME.attach(src)
+	ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack
+	ME.attach(src)
+	return
+
 /obj/mecha/combat/gygax/dark/loaded/New()
 	..()
 	var/obj/item/mecha_parts/mecha_equipment/ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/carbine
@@ -38,6 +49,8 @@
 	ME = new /obj/item/mecha_parts/mecha_equipment/teleporter
 	ME.attach(src)
 	ME = new /obj/item/mecha_parts/mecha_equipment/tesla_energy_relay
+	ME.attach(src)
+	ME = new /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack
 	ME.attach(src)
 	return
 

@@ -14,7 +14,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 	slot_flags = SLOT_ID | SLOT_BELT
 
 	//Main variables
-	var/owner = null
+	var/owner = null // String name of owner
 	var/default_cartridge = 0 // Access level defined by cartridge
 	var/obj/item/weapon/cartridge/cartridge = null //current cartridge
 	var/mode = 0 //Controls what menu the PDA will display. 0 is hub; the rest are either built in or based on cartridge.
@@ -216,6 +216,9 @@ var/global/list/obj/item/device/pda/PDAs = list()
 		cartridge = new default_cartridge(src)
 	new /obj/item/weapon/pen(src)
 
+/obj/item/device/pda/proc/update_label()
+	name = "PDA-[owner] ([ownjob])" //Name generalisation
+
 /obj/item/device/pda/proc/can_use(mob/user)
 	if(user && ismob(user))
 		if(user.stat || user.restrained() || user.paralysis || user.stunned || user.weakened)
@@ -295,12 +298,18 @@ var/global/list/obj/item/device/pda/PDAs = list()
 						dat += "<h4>Engineering Functions</h4>"
 						dat += "<ul>"
 						dat += "<li><a href='byond://?src=\ref[src];choice=43'><img src=pda_power.png> Power Monitor</a></li>"
+						if(istype(cartridge.radio, /obj/item/radio/integrated/floorbot))
+							dat += "<li><a href='byond://?src=\ref[src];choice=51'><img src=pda_floorbot.png> Floorbot Access</a></li>"
 						dat += "</ul>"
 					if (cartridge.access_medical)
 						dat += "<h4>Medical Functions</h4>"
 						dat += "<ul>"
 						dat += "<li><a href='byond://?src=\ref[src];choice=44'><img src=pda_medical.png> Medical Records</a></li>"
 						dat += "<li><a href='byond://?src=\ref[src];choice=Medical Scan'><img src=pda_scanner.png> [scanmode == 1 ? "Disable" : "Enable"] Medical Scanner</a></li>"
+					if(istype(cartridge.radio, /obj/item/radio/integrated/medbot))
+						dat += "<li><a href='byond://?src=\ref[src];choice=52'><img src=pda_medbot.png> Medibot Access</a></li>"
+						dat += "</ul>"
+					else	//dat += "</ul>"
 						dat += "</ul>"
 					if (cartridge.access_security)
 						dat += "<h4>Security Functions</h4>"
@@ -323,6 +332,8 @@ var/global/list/obj/item/device/pda/PDAs = list()
 				if (cartridge)
 					if (cartridge.access_janitor)
 						dat += "<li><a href='byond://?src=\ref[src];choice=49'><img src=pda_bucket.png> Custodial Locator</a></li>"
+						if(istype(cartridge.radio, /obj/item/radio/integrated/cleanbot))
+							dat += "<li><a href='byond://?src=\ref[src];choice=50'><img src=pda_bucket.png> Cleanbot Access</a></li>"
 					if (istype(cartridge.radio, /obj/item/radio/integrated/signal))
 						dat += "<li><a href='byond://?src=\ref[src];choice=40'><img src=pda_signaler.png> Signaler System</a></li>"
 					if (cartridge.access_reagent_scanner)
@@ -465,16 +476,16 @@ var/global/list/obj/item/device/pda/PDAs = list()
 					mode = 0
 				else
 					mode = round(mode/10)
-					if(mode==4)//Fix for cartridges. Redirects to hub.
+					if(mode==4 || mode == 5)//Fix for cartridges. Redirects to hub.
 						mode = 0
-					else if(mode >= 40 && mode <= 49)//Fix for cartridges. Redirects to refresh the menu.
+					else if(mode >= 40 && mode <= 59)//Fix for cartridges. Redirects to refresh the menu.
 						cartridge.mode = mode
 						cartridge.unlock()
 			if ("Authenticate")//Checks for ID
 				id_check(U, 1)
 			if("UpdateInfo")
 				ownjob = id.assignment
-				name = "PDA-[owner] ([ownjob])"
+				update_label()
 			if("Eject")//Ejects the cart, only done from hub.
 				if (!isnull(cartridge))
 					var/turf/T = loc
@@ -501,7 +512,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 			if("4")//Redirects to hub
 				mode = 0
 			if("chatroom") // chatroom hub
-				mode = 5
+				mode = 6
 
 
 //MAIN FUNCTIONS===================================
@@ -850,7 +861,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 		if(!owner)
 			owner = idcard.registered_name
 			ownjob = idcard.assignment
-			name = "PDA-[owner] ([ownjob])"
+			update_label()
 			user << "<span class='notice'>Card scanned.</span>"
 		else
 			//Basic safety check. If either both objects are held by user or PDA is on ground and card is in hand.
@@ -971,19 +982,17 @@ var/global/list/obj/item/device/pda/PDAs = list()
 
 //AI verb and proc for sending PDA messages.
 
-/mob/living/silicon/ai/verb/cmd_send_pdamesg()
-	set category = "AI Commands"
-	set name = "PDA - Send Message"
+/mob/living/silicon/ai/proc/cmd_send_pdamesg(mob/user as mob)
 	var/list/names = list()
 	var/list/plist = list()
 	var/list/namecounts = list()
 
-	if(usr.stat == 2)
-		usr << "You can't send PDA messages because you are dead!"
+	if(user.stat == 2)
+		user << "You can't send PDA messages because you are dead!"
 		return
 
 	if(src.aiPDA.toff)
-		usr << "Turn on your receiver in order to send messages."
+		user << "Turn on your receiver in order to send messages."
 		return
 
 	for (var/obj/item/device/pda/P in get_viewable_pdas())
@@ -1002,7 +1011,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 
 		plist[text("[name]")] = P
 
-	var/c = input(usr, "Please select a PDA") as null|anything in sortList(plist)
+	var/c = input(user, "Please select a PDA") as null|anything in sortList(plist)
 
 	if (!c)
 		return
@@ -1036,17 +1045,15 @@ var/global/list/obj/item/device/pda/PDAs = list()
 	else
 		usr << "You do not have a PDA. You should make an issue report about this."
 
-/mob/living/silicon/ai/verb/cmd_show_message_log()
-	set category = "AI Commands"
-	set name = "PDA - Show Message Log"
-	if(usr.stat == 2)
-		usr << "You can't do that because you are dead!"
+/mob/living/silicon/ai/proc/cmd_show_message_log(mob/user as mob)
+	if(user.stat == 2)
+		user << "You can't do that because you are dead!"
 		return
 	if(!isnull(aiPDA))
 		var/HTML = "<html><head><title>AI PDA Message Log</title></head><body>[aiPDA.tnote]</body></html>"
-		usr << browse(HTML, "window=log;size=400x444;border=1;can_resize=1;can_close=1;can_minimize=0")
+		user << browse(HTML, "window=log;size=400x444;border=1;can_resize=1;can_close=1;can_minimize=0")
 	else
-		usr << "You do not have a PDA. You should make an issue report about this."
+		user << "You do not have a PDA. You should make an issue report about this."
 
 //Some spare PDAs in a box
 /obj/item/weapon/storage/box/PDAs

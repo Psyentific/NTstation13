@@ -353,7 +353,7 @@
 			update_overlay |= APC_UPOVERLAY_ENVIRON1
 		else if(environ==2)
 			update_overlay |= APC_UPOVERLAY_ENVIRON2
-	
+
 
 	var/results = 0
 	if(last_update_state == update_state && last_update_overlay == update_overlay)
@@ -553,14 +553,14 @@
 					"You disassembled the broken APC frame.",\
 					"\red You hear welding.")
 			else
-				new /obj/item/apc_frame(loc)
+				new /obj/item/wall_frame/apc(loc)
 				user.visible_message(\
 					"\red [src] has been cut from the wall by [user.name] with the weldingtool.",\
 					"You cut the APC frame from the wall.",\
 					"\red You hear welding.")
 			qdel(src)
 			return
-	else if (istype(W, /obj/item/apc_frame) && opened && emagged)
+	else if (istype(W, /obj/item/wall_frame/apc) && opened && emagged)
 		emagged = 0
 		if (opened==2)
 			opened = 1
@@ -569,7 +569,7 @@
 			"You replace the damaged APC frontal panel with a new one.")
 		qdel(W)
 		update_icon()
-	else if (istype(W, /obj/item/apc_frame) && opened && ((stat & BROKEN) || malfhack))
+	else if (istype(W, /obj/item/wall_frame/apc) && opened && ((stat & BROKEN) || malfhack))
 		if (has_electronics)
 			user << "You cannot repair this APC until you remove the electronics still inside."
 			return
@@ -771,9 +771,7 @@
 		return 0
 	if(!user.client)
 		return 0
-	if ( ! (istype(user, /mob/living/carbon/human) || \
-			istype(user, /mob/living/silicon) || \
-			istype(user, /mob/living/carbon/monkey) /*&& ticker && ticker.mode.name == "monkey"*/) )
+	if (!user.IsAdvancedToolUser())
 		user << "\red You don't have the dexterity to use this [src]!"
 		return 0
 	if(user.restrained())
@@ -1183,13 +1181,8 @@ obj/machinery/power/apc/proc/autoset(var/val, var/on)
 
 	return val
 
+
 // damage and destruction acts
-
-/obj/machinery/power/apc/meteorhit(var/obj/O as obj)
-
-	set_broken()
-	return
-
 /obj/machinery/power/apc/emp_act(severity)
 	if(cell)
 		cell.emp_act(severity)

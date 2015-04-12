@@ -171,7 +171,7 @@
 		Ninja.internals.icon_state = "internal1"
 
 	if(Ninja.mind != Mind)			//something has gone wrong!
-		error("The ninja wasn't assigned the right mind. ;(")
+		ERROR("The ninja wasn't assigned the right mind. ;ç;")
 
 	success_spawn = 1
 
@@ -2740,11 +2740,6 @@ It is possible to destroy the net by the occupant or someone else.
 		healthcheck()
 		return
 
-	meteorhit()
-		health-=50
-		healthcheck()
-		return
-
 	hitby(AM as mob|obj)
 		..()
 		for(var/mob/O in viewers(src, null))
@@ -2761,7 +2756,7 @@ It is possible to destroy the net by the occupant or someone else.
 		return
 
 	attack_hand()
-		if (HULK in usr.mutations)
+		if (usr.has_organic_effect(/datum/organic_effect/hulk))
 			usr << text("\blue You easily destroy the energy net.")
 			for(var/mob/O in oviewers(src))
 				O.show_message(text("\red [] rips the energy net apart!", usr), 1)

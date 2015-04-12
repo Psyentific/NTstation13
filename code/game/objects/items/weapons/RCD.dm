@@ -6,7 +6,7 @@ RCD
 */
 /obj/item/weapon/rcd
 	name = "rapid-construction-device (RCD)"
-	desc = "A device used to rapidly build walls/floor."
+	desc = "A device that uses compressed matter to rapidly assemble and disassemble basic structures such as walls, flooring, and airlocks."
 	icon = 'icons/obj/items.dmi'
 	icon_state = "rcd"
 	opacity = 0
@@ -18,7 +18,7 @@ RCD
 	throw_speed = 3
 	throw_range = 5
 	w_class = 3.0
-	m_amt = 50000
+	m_amt = 30000
 	origin_tech = "engineering=4;materials=2"
 	var/datum/effect/effect/system/spark_spread/spark_system
 	var/matter = 0
@@ -200,6 +200,11 @@ RCD
 					return 0
 
 				if(istype(A, /turf/simulated/floor))
+					var/turf/T = get_turf(user)
+					if(T.z > 6)
+						// No floors deconstruction on planet away missions
+						return 0
+
 					if(checkResource(5, user))
 						user << "Deconstructing Floor..."
 						playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
@@ -260,5 +265,11 @@ RCD
 	density = 0
 	anchored = 0.0
 	origin_tech = "materials=2"
-	m_amt = 30000
-	g_amt = 15000
+	m_amt = 16000
+	g_amt = 8000
+
+/obj/item/weapon/rcd_ammo/syndie
+	name = "modified compressed matter cartridge"
+	desc = "Extra-highly compressed matter for the RCD."
+	m_amt = 48000
+	g_amt = 24000

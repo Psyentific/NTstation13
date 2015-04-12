@@ -9,17 +9,17 @@ var/list/admin_datums = list()
 	var/datum/marked_datum
 
 	var/admincaster_screen = 0	//See newscaster.dm under machinery for a full description
-	var/datum/feed_message/admincaster_feed_message = new /datum/feed_message   //These two will act as holders.
-	var/datum/feed_channel/admincaster_feed_channel = new /datum/feed_channel
+	var/tmp/datum/feed_message/admincaster_feed_message = new /datum/feed_message   //These two will act as holders.
+	var/tmp/datum/feed_channel/admincaster_feed_channel = new /datum/feed_channel
 	var/admincaster_signature	//What you'll sign the newsfeeds as
 
 /datum/admins/New(datum/admin_rank/R, ckey)
 	if(!ckey)
-		error("Admin datum created without a ckey argument. Datum has been deleted")
+		ERROR("Admin datum created without a ckey argument. Datum has been deleted")
 		del(src)
 		return
 	if(!istype(R))
-		error("Admin datum created without a rank. Datum has been deleted")
+		ERROR("Admin datum created without a rank. Datum has been deleted")
 		del(src)
 		return
 	rank = R

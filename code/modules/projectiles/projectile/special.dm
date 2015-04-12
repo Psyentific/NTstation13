@@ -50,7 +50,7 @@
 /obj/item/projectile/meteor
 	name = "meteor"
 	icon = 'icons/obj/meteor.dmi'
-	icon_state = "smallf"
+	icon_state = "small1"
 	damage = 0
 	damage_type = BRUTE
 	nodamage = 1
@@ -67,7 +67,7 @@
 		if(src)//Do not add to this if() statement, otherwise the meteor won't delete them
 			if(A)
 
-				A.meteorhit(src)
+				A.ex_act(2)
 				playsound(src.loc, 'sound/effects/meteorimpact.ogg', 40, 1)
 
 				for(var/mob/M in range(10, src))
@@ -151,7 +151,7 @@
 	damage_type = BRUTE
 	flag = "bomb"
 	trace_residue = null
-	var/range = 2
+	range = 2
 
 obj/item/projectile/kinetic/New()
 	var/turf/proj_turf = get_turf(src)
@@ -161,29 +161,88 @@ obj/item/projectile/kinetic/New()
 	var/pressure = environment.return_pressure()
 	if(pressure < 50)
 		name = "full strength kinetic force"
-		damage = 30
+		damage *= 2
 	..()
 
-/obj/item/projectile/kinetic/Range()
-	range--
+/obj/item/projectile/kinetic/Range(var/remove=1)
 	if(range <= 0)
-		new /obj/item/effect/kinetic_blast(src.loc)
+		return
+
+	range -= remove
+	if(range <= 0)
+		new /obj/effect/kinetic_blast(src.loc)
+
+		for(var/turf/T in range(1, src.loc))
+			if(!istype(T, /turf/simulated/wall))
+				T.ex_act(3)
+
+		for(var/obj/structure/S in range(1, src.loc))
+			S.ex_act(3)
 		delete()
+
 
 /obj/item/projectile/kinetic/on_hit(var/atom/target)
 	var/turf/target_turf= get_turf(target)
 	if(istype(target_turf, /turf/simulated/mineral))
 		var/turf/simulated/mineral/M = target_turf
 		M.gets_drilled()
-	new /obj/item/effect/kinetic_blast(target_turf)
+	new /obj/effect/kinetic_blast(target_turf)
+
+	if(isturf(target) || istype(target, /obj/structure))
+		for(var/turf/T in range(1, target_turf))
+			if(!istype(T, /turf/simulated/wall))
+				T.ex_act(3)
+
+		for(var/obj/structure/S in range(1, target_turf))
+			S.ex_act(3)
 	..()
 
-/obj/item/effect/kinetic_blast
+
+/obj/effect/kinetic_blast
 	name = "kinetic explosion"
 	icon = 'icons/obj/projectiles.dmi'
 	icon_state = "kinetic_blast"
 	layer = 4.1
 
-/obj/item/effect/kinetic_blast/New()
+/obj/effect/kinetic_blast/New()
 	spawn(4)
 		qdel(src)
+
+
+
+/obj/item/projectile/plasma
+	name = "plasma blast"
+	icon_state = "plasmacutter"
+	damage_type = BURN
+	damage = 10
+	range = 6
+	var/power = 9
+	trace_residue = null
+
+/obj/item/projectile/plasma/on_hit(var/atom/target)
+	if(istype(target, /turf/simulated/mineral))
+		while(target && target.density && range > 0 && power > 0)
+			power -= 1
+			var/turf/simulated/mineral/M = target
+			M.gets_drilled()
+		if(range > 0 && power > 0)
+			return -1
+	return ..()
+
+/obj/item/projectile/plasma/adv
+	range = 9
+	power = 12
+	damage = 15
+
+/obj/item/projectile/plasma/adv/on_hit(var/atom/target)
+	if(!ismob(target) && !istype(target, /turf/simulated/mineral))
+		target.ex_act(3)
+		power -= 10
+		if(range > 0 && power > 0 && (!target || !target.density))
+			return -1
+	return ..()
+
+
+/obj/item/projectile/plasma/adv/mech
+	range = 12
+	power = 18

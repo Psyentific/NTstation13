@@ -42,16 +42,18 @@ var/global/list/autolathe_recipes = list( \
 		new /obj/item/device/radio/off(), \
 		new /obj/item/device/assembly/infra(), \
 		new /obj/item/device/assembly/timer(), \
+		new /obj/item/device/assembly/health(), \
 		new /obj/item/device/assembly/voice(), \
 		new /obj/item/weapon/light/tube(), \
 		new /obj/item/weapon/light/bulb(), \
 		new /obj/item/weapon/camera_assembly(), \
-		new /obj/item/newscaster_frame(), \
+		new /obj/item/wall_frame/newscaster(), \
 		new /obj/item/weapon/reagent_containers/syringe(), \
 		new /obj/item/device/assembly/prox_sensor(), \
 	)
 
 var/global/list/autolathe_recipes_hidden = list( \
+		new /obj/item/weapon/baseballbat/metal(), \
 		new /obj/item/weapon/flamethrower/full(), \
 		new /obj/item/weapon/rcd(), \
 		new /obj/item/device/radio/electropack(), \
@@ -59,10 +61,14 @@ var/global/list/autolathe_recipes_hidden = list( \
 		new /obj/item/weapon/handcuffs(), \
 		new /obj/item/ammo_box/a357(), \
 		new /obj/item/ammo_box/c10mm(), \
+		new /obj/item/ammo_box/c9mm(), \
+		new /obj/item/ammo_box/c45(), \
+		new /obj/item/ammo_box/magazine/m9mm(), \
 		new /obj/item/ammo_casing/shotgun(), \
 		new /obj/item/ammo_casing/shotgun/buckshot(), \
 		new /obj/item/ammo_casing/shotgun/dart(), \
 		new /obj/item/ammo_casing/shotgun/incendiary(), \
+		new /obj/item/glockbarrel(), \
 		/* new /obj/item/weapon/shield/riot(), */ \
 	)
 

@@ -53,6 +53,83 @@
 		turret.shot_delay = 20
 	src << "<span class='notice'>Turrets upgraded.</span>"
 
+/datum/AI_Module/large/lockdown
+	module_name = "Hostile Station Lockdown"
+	mod_pick_name = "lockdown"
+	description = "Take control of the airlock, blast door and fire control networks, locking them down. Caution! This command also electrifies all airlocks."
+	cost = 20
+	one_time = 1
+
+	power_type = /mob/living/silicon/ai/proc/lockdown
+
+/mob/living/silicon/ai/proc/lockdown()
+	set category = "Malfunction"
+	set name = "Initiate Hostile Lockdown"
+
+	if(malf_cooldown)
+		src << "Network calibration in progress. Standby."
+		return
+
+	if(src.stat == 2)
+		src <<"Critical system failure. Function offline."
+		return
+	var/obj/machinery/door/airlock/AL
+	for(var/obj/machinery/door/D in portals)
+		spawn()
+			if(istype(D, /obj/machinery/door/airlock))
+				AL = D
+				if(AL.canAIControl() && !AL.stat) //Must be powered and have working AI wire.
+					AL.locked = 0 //For airlocks that were bolted open.
+					AL.safe = 0 //DOOR CRUSH
+					AL.close()
+					AL.locked = 1 //Bolt it!
+					AL.secondsElectrified = -1  //Shock it!
+					AL.update_icon() //Ensure the airlock's state is correctly shown.
+			else if(!D.stat) //So that only powered doors are closed.
+				D.close() //Close ALL the doors!
+
+	var/obj/machinery/computer/communications/C = locate() in machines
+	if(C)
+		C.post_status("alert", "lockdown")
+
+	src.verbs += /mob/living/silicon/ai/proc/disablelockdown
+	src << "<span class = 'warning'>Lockdown Initiated.</span>"
+
+	//Short cooldown, for performance.
+	malf_cooldown = 1
+	spawn(30)
+	malf_cooldown = 0
+/mob/living/silicon/ai/proc/disablelockdown()
+	set category = "Malfunction"
+	set name = "Disable Lockdown"
+
+	if(src.stat == 2)
+		src << "System offline."
+		return
+
+	if(malf_cooldown)
+		src << "Network calibration in progress. Standby."
+		return
+
+	var/obj/machinery/door/airlock/AL
+	for(var/obj/machinery/door/D in portals)
+		spawn()
+			if(istype(D, /obj/machinery/door/airlock))
+				AL = D
+				if(AL.canAIControl() && !AL.stat) //Must be powered and have working AI wire.
+					AL.locked = 0 //Unbolt all airlocks before trying to open them!
+					AL.secondsElectrified = 0
+					AL.open()
+					AL.safe = 1 //Remove this line for potential door crushing!
+					AL.update_icon()
+			else if(!D.stat) //Opens only powered doors.
+				D.open() //Open everything!
+
+	src << "<span class = 'notice'>Lockdown Lifted.</span>"
+	malf_cooldown = 1
+	spawn(30)
+	malf_cooldown = 0
+
 /datum/AI_Module/large/disable_rcd
 	module_name = "RCD disable"
 	mod_pick_name = "rcd"
@@ -224,7 +301,7 @@
 	set name = "Hack intercept"
 	src.verbs -= /mob/living/silicon/ai/proc/interhack
 
-	if(game_is_malf_mode(ticker.mode))
+	if(gamemode_is("AI malfunction"))
 		var/datum/game_mode/malfunction/Malf = ticker.mode
 		Malf.hack_intercept()
 		src << "<span class='notice'>Status update intercepted and modified.</span>"

@@ -50,12 +50,6 @@
 	qdel(src)
 
 
-/obj/structure/window/meteorhit()
-	//world << "glass at [x],[y],[z] Mhit"
-	new /obj/item/weapon/shard( loc )
-	if(reinf) new /obj/item/stack/rods( loc)
-	qdel(src)
-
 /obj/structure/window/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(istype(mover) && mover.checkpass(PASSGLASS))
 		return 1
@@ -104,7 +98,7 @@
 /obj/structure/window/attack_hand(mob/user as mob)
 	if(!can_be_reached(user))
 		return
-	if(HULK in user.mutations)
+	if(user.has_organic_effect(/datum/organic_effect/hulk))
 		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!"))
 		user.visible_message("<span class='danger'>[user] smashes through [src]!</span>")
 		var/obj/item/weapon/shard/S = new (loc)
@@ -389,3 +383,18 @@
 /obj/structure/window/reinforced/tinted/frosted
 	name = "frosted window"
 	icon_state = "fwindow"
+
+/obj/structure/window/shuttle
+	name = "shuttle window"
+	desc = "It looks rather strong. Might take a few good hits to shatter it."
+	icon = 'icons/obj/podwindows.dmi'
+	icon_state = "window"
+	dir = 5
+	reinf = 1
+	health = 40
+
+/obj/structure/window/shuttle/update_icon() //icon_state has to be set manually
+	return
+
+/obj/structure/window/shuttle/New()
+	return

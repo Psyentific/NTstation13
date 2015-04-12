@@ -276,6 +276,18 @@
 	icon = 'icons/obj/doors/doorshuttle.dmi'
 	doortype = 34
 
+/obj/machinery/door/airlock/wood
+	name = "wooden airlock"
+	icon = 'icons/obj/doors/Doorwood.dmi'
+	var/mineral = "wood"
+	doortype = 35
+
+
+/obj/machinery/door/airlock/highsecurity_dark
+	name = "high tech security airlock"
+	icon = 'icons/obj/doors/hightechsyndie.dmi'
+	doortype = 36
+
 /*
 About the new airlock wires panel:
 *	An airlock wire dialog can be accessed by the normal way or by using wirecutters or a multitool on the door while the wire-panel is open. This would show the following wires, which you can either wirecut/mend or send a multitool pulse through. There are 9 wires.
@@ -941,6 +953,7 @@ About the new airlock wires panel:
 					if(32) new/obj/structure/door_assembly/door_assembly_science/glass( src.loc )
 					if(33) new/obj/structure/door_assembly/door_assembly_highsecurity(src.loc)
 					if(34) new/obj/structure/door_assembly/door_assembly_shuttle(src.loc)
+					if(35) new/obj/structure/door_assembly/door_assembly_wood(src.loc)
 				if(emagged)
 					user << "<span class='warning'>You discard the damaged electronics.</span>"
 					qdel(src)
